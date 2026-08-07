@@ -1,0 +1,157 @@
+#!/bin/bash
+#By Qidong Xia 2026.8.8
+
+mem_G=24
+mem_O=2500
+nprocs=12
+sed -i "39c omp: $nprocs" censorc_MLJDP4
+sed -i "2c %MaxCore $mem_O" ~/.censo_assets/censo_orca_editable.dat
+
+#Read user's information
+python askinfo.py
+outputpath=$(sed -n "1p" info.txt)
+zipname=$(sed -n "2p" info.txt)
+email=$(sed -n "3p" info.txt)
+rm info.txt
+if [ -z "$outputpath" ] || [ -z "$zipname" ] || [ -z "$email" ]
+then
+  echo "Incomplete Information!"
+  exit
+fi
+
+#Read the maxthreads
+while :
+do
+  read -r -p "Choose the Maxthreads (1/2/3):" maxthreads
+  if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ]
+  then
+    echo "Invalid Input!"
+  else
+    sed -i "38c maxthreads: $maxthreads" censorc_MLJDP4
+    break
+  fi
+done
+
+starttime=$(date)
+
+#Input file: .xyz files in current directory
+nfile=$(find ./*.xyz|wc -l)
+icc=0
+for inf in *.xyz
+do
+  ((icc++))
+  echo Running "$inf" ... \("$icc" of "$nfile"\)
+#Conformational search by CREST
+#Sampling level: GFNFF
+#Optimization level: GFN2 (threshold: 6 kcal/mol)
+  mkdir "${inf%.xyz}"_search
+  cp "$inf" "${inf%.xyz}"_search
+  cd "${inf%.xyz}"_search || exit
+  crest "$inf" --gfnff -nmr
+  crest --screen crest_conformers.xyz --gfn2
+  cd ../
+#Conformational screening by CENSO
+#Level: r2scan-3c
+  mkdir "${inf%.xyz}"_screening
+  cp "$inf" "${inf%.xyz}"_screening
+  cp "${inf%.xyz}"_search/crest_ensemble.xyz "${inf%.xyz}"_screening/input_ensemble.xyz
+  cd "${inf%.xyz}"_screening || exit
+  censo -inp input_ensemble.xyz -inprc ../censorc_MLJDP4
+  crest "$inf" --cregen enso_ensemble_part1.xyz
+  cd ../
+#Geometry optimization
+#Level: MMFF94
+  mkdir "${inf%.xyz}"_batch
+  cp "${inf%.xyz}"_screening/crest_ensemble.xyz "${inf%.xyz}"_batch/traj.xyz
+  cp settings.ini "${inf%.xyz}"_batch
+  cd "${inf%.xyz}"_batch || exit
+  molclus > molclus.log
+  echo -e "\n\n\n" | isostat
+  ngeom=$(grep -c " Energy =" cluster.xyz)
+  rm settings.ini
+  cd ../
+  echo -e "\e[33mOPTIMIZATION DONE\e[0m"
+#NMR & NBO calculation
+#Level: HF/3-21G
+  nbatch=$maxthreads
+  if [ "$ngeom" -lt "$maxthreads" ]
+  then
+    sed -i "1c %mem=$(("$mem_G" * "$maxthreads" / "$ngeom"))GB" template*.gjf
+    sed -i "2c %nprocs=$(("$nprocs" * "$maxthreads" / "$ngeom"))" template*.gjf
+    nbatch=$ngeom
+  else
+    sed -i "1c %mem=${mem_G}GB" template*.gjf
+    sed -i "2c %nprocs=$nprocs" template*.gjf
+  fi
+  cp template_nmr.gjf "${inf%.xyz}"_batch/template.gjf
+  ntask=$(("$ngeom" / "$nbatch"))
+  nmod=$(("$ngeom" % "$nbatch"))
+  x=1
+  startn=1
+  while [ $x -le "$nbatch" ]
+  do
+    mkdir "${inf%.xyz}"_batch_$x
+    cp nmr_calc.sh "${inf%.xyz}"_batch_$x
+    if [ "$x" -le "$nmod" ]
+    then
+      endn=$(("$startn" + "$ntask"))
+    else
+      endn=$(("$startn" + "$ntask" - 1))
+    fi
+    cd "${inf%.xyz}"_batch || exit
+    echo -e "2\ncluster.xyz\n$startn-$endn\nnmr\n" | xyz2QC
+    mv nmr*.gjf ../"${inf%.xyz}"_batch_$x
+    cd ../
+    startn=$(("$endn" + 1))
+    ((x++))
+  done
+  for i in "${inf%.xyz}"_batch_*
+  do
+    cd "$i" || exit
+    ./nmr_calc.sh &
+    cd ../
+  done
+  wait
+  cd "${inf%.xyz}"_batch || exit
+  rm template.gjf
+  mkdir nmr
+  mkdir opt
+  mv traj.xyz opt
+  mv isomers.xyz opt
+  mv cluster.xyz opt
+  mv molclus.log opt
+  cd ../
+  for i in "${inf%.xyz}"_batch_*
+  do
+    cd "$i" || exit
+    mv nmr*.out ../"${inf%.xyz}"_batch/nmr
+    mv nmr*.gjf ../"${inf%.xyz}"_batch/nmr
+    cd ../
+    rm -r "$i"
+  done
+#Rename
+  cd "${inf%.xyz}"_batch/nmr || exit
+  for j in nmr*.out
+  do
+    mv "$j" "$icc"_"${inf%.xyz}"_nmr_"${j#nmr}".out
+  done
+  cd ../../
+  echo -e "\e[33m$inf has finished\e[0m"
+done
+
+endtime=$(date)
+
+#Package the input and output files and send a reminder email
+for inf in *.xyz
+do
+  zip -m "$zipname".zip "$inf"
+  zip -r -m "$zipname".zip "${inf%.xyz}"_*
+done
+mv "$zipname".zip "$outputpath"
+echo "Subject: ML-J-DP4 Calculation Done!
+
+The calculation task has been completed, and the output file $zipname.zip has been stored in the directory $outputpath.
+Used time: from $starttime to $endtime" >> mail.txt
+ssmtp "$email" < mail.txt
+rm mail.txt
+echo -e "\e[33m---------------------CALCULATION DONE---------------------\e[0m"

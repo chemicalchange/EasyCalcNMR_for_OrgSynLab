@@ -1,0 +1,85 @@
+#!/bin/bash
+#By Qidong Xia 2026.8.8
+
+mem_O=2500
+nprocs=12
+sed -i "39c omp: $nprocs" censorc_autohnmr
+sed -i "2c %MaxCore $mem_O" ~/.censo_assets/censo_orca_editable.dat
+sed -i "87c couplings: off" censorc_autohnmr
+
+#Read user's information
+python askinfo.py
+outputpath=$(sed -n "1p" info.txt)
+zipname=$(sed -n "2p" info.txt)
+email=$(sed -n "3p" info.txt)
+rm info.txt
+if [ -z "$outputpath" ] || [ -z "$zipname" ] || [ -z "$email" ]
+then
+  echo "Incomplete Information!"
+  rm info.txt
+  exit
+fi
+
+#Read the maxthreads
+while :
+do
+  read -r -p "Choose the Maxthreads (1/2/3):" maxthreads
+  if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ]
+  then
+    echo "Invalid Input!"
+  else
+    sed -i "38c maxthreads: $maxthreads" censorc_autohnmr
+    break
+  fi
+done
+
+starttime=$(date)
+
+#Input file:.xyz files in current directory
+nfile=$(find ./*.xyz|wc -l)
+icc=0
+for inf in *.xyz
+do
+  ((icc++))
+  echo Running "${inf}" ... \($icc of "$nfile"\)
+#Conformational search by CREST
+#Sampling level: GFNFF
+#Optimization level: GFN2 (threshold: 6 kcal/mol)
+  mkdir "${inf%.xyz}"_search
+  cp "$inf" "${inf%.xyz}"_search
+  cd "${inf%.xyz}"_search || exit
+  crest "$inf" --gfnff -nmr
+  crest --screen crest_conformers.xyz --gfn2
+  cd ../
+#Conformational screening by CENSO
+#Level: wB97M-V-SMD(CHCl3)/def2-TZVP//B3LYP-3c-CPCM(CHCl3) + RRHO(GFN2-ALPB(CHCl3))
+#NMR calculation by CENSO
+#Level: chemical shifts: revTPSS-CPCM(CHCl3)/cc-pVTZ
+  mkdir "${inf%.xyz}"_screening
+  cp "${inf%.xyz}"_search/anmr* ./"${inf%.xyz}"_screening
+  cp "${inf%.xyz}"_search/coord ./"${inf%.xyz}"_screening
+  cp "${inf%.xyz}"_search/crest_ensemble.xyz "${inf%.xyz}"_screening/input_ensemble.xyz
+  cd "${inf%.xyz}"_screening || exit
+  censo -inp input_ensemble.xyz -inprc ../censorc_autohnmr
+  rm ./.anmrrc
+  anmr -plain -onlyshifts > "anmr_${inf%.xyz}".out
+  echo -e "\e[33m$inf has finished\e[0m"
+  cd ../
+done
+
+endtime=$(date)
+
+#Package the input and output files and send a reminder email
+for inf in *.xyz
+do
+  zip -m "$zipname".zip "${inf}"
+  zip -r -m "$zipname".zip "${inf%.xyz}"_*
+done
+mv "$zipname".zip "$outputpath"
+echo -e "Subject: autohnmr Calculation Done!
+
+The calculation task has been completed, and the output file $zipname.zip has been stored in the directory $outputpath.
+Used time: from $starttime to $endtime" >> mail.txt
+ssmtp "${email}" < mail.txt
+rm mail.txt
+echo -e "\e[33m---------------------CALCULATION DONE---------------------\e[0m"

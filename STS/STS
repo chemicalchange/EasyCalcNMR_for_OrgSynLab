@@ -1,0 +1,184 @@
+#!/bin/bash
+#By Qidong Xia 2026.8.8
+
+mem_G=24
+mem_O=2500
+nprocs=12
+sed -i "39c omp: $nprocs" censorc_STS
+sed -i "2c %MaxCore $mem_O" ~/.censo_assets/censo_orca_editable.dat
+
+#Read user's information
+python askinfo.py
+outputpath=$(sed -n "1p" info.txt)
+zipname=$(sed -n "2p" info.txt)
+email=$(sed -n "3p" info.txt)
+rm info.txt
+if [ -z "$outputpath" ] || [ -z "$zipname" ] || [ -z "$email" ]
+then
+  echo "Incomplete Information!"
+  exit
+fi
+
+#Read the maxthreads
+while :
+do
+  read -r -p "Choose the Maxthreads (1/2/3):" maxthreads
+  if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ]
+  then
+    echo "Invalid Input!"
+  else
+    sed -i "38c maxthreads: $maxthreads" censorc_STS
+    break
+  fi
+done
+
+#Read the solvent
+while :
+do
+  read -r -p "Choose the Solvent (chloroform/methanol/dmso):" sol
+  if [ "$sol" != "chloroform" ] && [ "$sol" != "methanol" ] && [ "$sol" != "dmso" ]
+  then
+    echo "Invalid Input!"
+  else
+    sed -i "4c scrf(solvent=$sol)" template*.gjf
+    if [ "$sol" == "chloroform" ]
+    then
+      sed -i "20c solvent: chcl3" censorc_STS
+    else
+      sed -i "20c solvent: $sol" censorc_STS
+    fi
+    break
+  fi
+done
+
+starttime=$(date)
+
+#Input file: .xyz files in current directory
+nfile=$(find ./*.xyz|wc -l)
+icc=0
+for inf in *.xyz
+do
+  ((icc++))
+  echo Running "$inf" ... \("$icc" of "$nfile"\)
+#Conformational search by CREST
+#Sampling level: GFNFF
+#Optimization level: GFN2 (threshold: 6 kcal/mol)
+  mkdir "${inf%.xyz}"_search
+  cp "$inf" "${inf%.xyz}"_search
+  cd "${inf%.xyz}"_search || exit
+  crest "$inf" --gfnff
+  crest --screen crest_conformers.xyz --gfn2
+  cd ../
+#Conformational screening by CENSO
+#Level: wB97M-V-SMD(solvent)/def2-TZVP//r2scan-3c-CPCM(solvent) + RRHO(GFN2-ALPB(solvent))
+  mkdir "${inf%.xyz}"_screening
+  cp "$inf" "${inf%.xyz}"_screening
+  cp "${inf%.xyz}"_search/crest_ensemble.xyz "${inf%.xyz}"_screening/input_ensemble.xyz
+  cd "${inf%.xyz}"_screening || exit
+  censo -inp input_ensemble.xyz -inprc ../censorc_STS
+  crest "$inf" --cregen enso_ensemble_part3.xyz
+  cd ../
+#Geometry optimization & NMR calculation
+#Optimization level: B3LYP-D3(BJ)-IEFPCM(solvent)/TZVP
+#NMR level: wB97XD-IEFPCM(solvent)/6-31G(d)
+  ngeom=$(sed -n '$=' "${inf%.xyz}"_screening/crest.energies)
+  nbatch=$maxthreads
+  if [ "$ngeom" -lt "$maxthreads" ]
+  then
+    sed -i "1c %mem=$(("$mem_G" * "$maxthreads" / "$ngeom"))GB" template*.gjf
+    sed -i "2c %nprocs=$(("$nprocs" * "$maxthreads" / "$ngeom"))" template*.gjf
+    nbatch=$ngeom
+  else
+    sed -i "1c %mem=${mem_G}GB" template*.gjf
+    sed -i "2c %nprocs=$nprocs" template*.gjf
+  fi
+  mkdir "${inf%.xyz}"_batch
+  cp "${inf%.xyz}"_screening/crest_ensemble.xyz "${inf%.xyz}"_batch/traj.xyz
+  cp template.gjf "${inf%.xyz}"_batch
+  cp template2.gjf "${inf%.xyz}"_batch
+  cp settings.ini "${inf%.xyz}"_batch
+  ntask=$(("$ngeom" / "$nbatch"))
+  nmod=$(("$ngeom" % "$nbatch"))
+  x=1
+  startn=1
+  while [ "$x" -le "$nbatch" ]
+  do
+    cp -r "${inf%.xyz}"_batch "${inf%.xyz}"_batch_$x
+    echo "molclus > molclus_$x.log
+echo optimization_batch_$x has finished
+./nmr_calc.sh" >> "${inf%.xyz}"_batch_$x/run.sh
+    chmod +x "${inf%.xyz}"_batch_$x/run.sh
+    cp nmr_calc.sh "${inf%.xyz}"_batch_$x
+    if [ "$x" -le "$nmod" ]
+    then
+      endn=$(("$startn" + "$ntask"))
+    else
+      endn=$(("$startn" + "$ntask" - 1))
+    fi
+    sed -i "2c \ \ ngeom=\ $startn-$endn" "${inf%.xyz}"_batch_$x/settings.ini
+    startn=$(("$endn" + 1))
+    ((x++))
+  done
+  echo -e "Running optimization ... \e[33mPLEASE DO NOT CLOSE THE TERMINATION!!!\e[0m"
+  for i in "${inf%.xyz}"_batch_*
+  do
+    cd "$i" || exit
+    ./run.sh &
+    cd ../
+  done
+  wait
+  cd "${inf%.xyz}"_batch || exit
+  mkdir nmr
+  mkdir opt
+  mv traj.xyz opt
+  rm template*
+  rm settings.ini
+  cd ../
+  for i in "${inf%.xyz}"_batch_*
+  do
+    cd "$i" || exit
+    cat isomers.xyz >> ../"${inf%.xyz}"_batch/opt/isomers.xyz
+    mv nmr*.out ../"${inf%.xyz}"_batch/nmr
+    mv nmr*.gjf ../"${inf%.xyz}"_batch/nmr
+    mv gau*.out ../"${inf%.xyz}"_batch/opt
+    mv ./*.log ../"${inf%.xyz}"_batch/opt
+    cd ../
+    rm -r "$i"
+  done
+#Data processing
+  mkdir "${inf%.xyz}"_result
+  cd "${inf%.xyz}"_batch/nmr || exit
+  for j in *.out
+  do
+    echo "$j" >> iso_summary.txt
+    grep 'C    Isotropic =' "$j" >> iso_summary.txt
+  done
+  mv iso_summary.txt ../../"${inf%.xyz}"_result
+  cp ../../"${inf%.xyz}"_screening/crest.energies ../../"${inf%.xyz}"_result/G_summary.txt
+  cp ../../Caverage_G.py ../../"${inf%.xyz}"_result
+  cd ../../"${inf%.xyz}"_result || exit
+  python Caverage_G.py
+  rm Caverage_G.py
+  mv iso_summary.txt "${inf%.xyz}"_iso_summary.txt
+  mv G_summary.txt "${inf%.xyz}"_G_summary.txt
+  mv result.txt "${inf%.xyz}"_result.txt
+  cd ../
+  echo -e "\e[33m$inf has finished\e[0m"
+done
+
+endtime=$(date)
+
+#Package the input and output files and send a reminder email
+for inf in *.xyz
+do
+  zip -m "$zipname".zip "$inf"
+  zip -r -m "$zipname".zip "${inf%.xyz}"_*
+done
+mv "$zipname".zip "$outputpath"
+echo "Subject: STS Calculation Done!
+
+The calculation task has been completed, and the output file $zipname.zip has been stored in the directory $outputpath.
+Used time: from $starttime to $endtime" >> mail.txt
+ssmtp "$email" < mail.txt
+rm mail.txt
+echo -e "\e[33m---------------------CALCULATION DONE---------------------\e[0m"
