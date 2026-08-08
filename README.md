@@ -280,7 +280,7 @@ rm ./*.mol
 
 2022年，北海道大学Keiji Tanino课题组通过全合成的方式确认了天然产物6,11-epoxyisodaucane的真实结构应为（**1**），并非分离文献推测的（**2**）（ *Org. Lett.* **2022**, *24*, 7939.）。
 
-<img src="C:\Users\xqd\Documents\Chemistry\PhD_research\nmr_calculation\Dinglab_nmr_calculation\example_1.jpg" style="zoom:50%;" />
+<img src="./pics/example_1.jpg" style="zoom:50%;" />
 
 
 
