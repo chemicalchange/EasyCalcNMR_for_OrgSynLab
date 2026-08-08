@@ -1,0 +1,862 @@
+
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                                            #,                                       
+                                            ###                                      
+                                            ####                                     
+                                            #####                                    
+                                            ######                                   
+                                           ########,                                 
+                                     ,,################,,,,,                         
+                               ,,#################################,,                 
+                          ,,##########################################,,             
+                       ,#########################################, ''#####,          
+                    ,#############################################,,   '####,        
+                  ,##################################################,,,,####,       
+                ,###########''''           ''''###############################       
+              ,#####''   ,,,,##########,,,,          '''####'''          '####       
+            ,##' ,,,,###########################,,,                        '##       
+           ' ,,###''''                  '''############,,,                           
+         ,,##''                                '''############,,,,        ,,,,,,###''
+      ,#''                                            '''#######################'''  
+     '                                                          ''''####''''         
+             ,#######,   #######,   ,#######,      ##                                
+            ,#'     '#,  ##    ##  ,#'     '#,    #''#        ,####,    ,#,          
+            ##       ##  ##   ,#'  ##            #'  '#       #'       ,# #          
+            ##       ##  #######   ##           ,######,      #####,      #          
+            '#,     ,#'  ##    ##  '#,     ,#' ,#      #,     #,   #      #          
+             '#######'   ##     ##  '#######'  #'      '#     '####' #    #          
+
+
+
+                #########################################################
+                #                        -***-                          #
+                #          Department of theory and spectroscopy        #
+                #                                                       #
+                #                      Frank Neese                      #
+                #                                                       #
+                #     Directorship, Architecture, Infrastructure        #
+                #                    SHARK, DRIVERS                     #
+                #        Core code/Algorithms in most modules           #
+                #                                                       #
+                #        Max Planck Institute fuer Kohlenforschung      #
+                #                Kaiser Wilhelm Platz 1                 #
+                #                 D-45470 Muelheim/Ruhr                 #
+                #                      Germany                          #
+                #                                                       #
+                #                  All rights reserved                  #
+                #                        -***-                          #
+                #########################################################
+
+
+                         Program Version 6.1.1  -  RELEASE   -
+                                (GIT: $487d211c$)
+                          ($2025-11-21 10:33:24 +0100$)
+
+
+ With contributions from (in alphabetic order):
+[Max-Planck-Institut fuer Kohlenforschung]                               
+  Daniel Aravena         : Magnetic Suceptibility                        
+  Michael Atanasov       : Ab Initio Ligand Field Theory (pilot matlab implementation)
+  Alexander A. Auer      : GIAO ZORA, VPT2 properties, NMR spectrum      
+  Ute Becker             : All parallelization in ORCA, NUMFREQ, NUMCALC 
+  Giovanni Bistoni       : ED, misc. LED, open-shell LED, HFLD           
+  Dmytro Bykov           : pre 5.0 version of the SCF Hessian            
+  Marcos Casanova-Páez   : Triplet and SCS-CIS(D). UHF-(DLPNO)-IP/EA/STEOM-CCSD. UHF-CVS-IP/STEOM-CCSD   
+  Vijay G. Chilkuri      : MRCI spin determinant printing, contributions to CSF-ICE 
+  Pauline Colinet        : FMM embedding                                 
+  Dipayan Datta          : RHF DLPNO-CCSD density                        
+  Achintya Kumar Dutta   : EOM-CC, STEOM-CC                              
+  Nicolas Foglia         : Exact transition moments, OPA infrastructure, MCD improvements    
+  Dmitry Ganyushin       : Spin-Orbit,Spin-Spin,Magnetic field MRCI      
+  Miquel Garcia-Rates    : C-PCM and meta-GGA Hessian, CCSD/C-PCM, Gaussian charge scheme 
+  Tiago L. C. Gouveia    : GS-ROHF, GS-ROCIS                             
+  Yang Guo               : DLPNO-NEVPT2, F12-NEVPT2, CIM, IAO-localization        
+  Andreas Hansen         : Spin unrestricted coupled pair/coupled cluster methods 
+  Ingolf Harden          : AUTO-CI MPn and infrastructure                
+  Benjamin Helmich-Paris : MC-RPA, TRAH-(SCF,CASSCF), AVAS, COSX integrals, SCF dyn. polar., MC-PDFT, srDFT 
+  Lee Huntington         : MR-EOM, pCC                                   
+  Robert Izsak           : Overlap fitted RIJCOSX, COSX-SCS-MP3, EOM     
+  Riya Kayal             : Wick's Theorem for AUTO-CI, AUTO-CI UHF-CCSDT 
+  Emily Kempfer          : AUTO-CI RHF CISDT and CCSDT, approximate NEVPT4
+  Christian Kollmar      : KDIIS, OOCD, Brueckner-CCSD(T), CCSD density, CASPT2, CASPT2-K, improved NEVPT2 
+  Axel Koslowski         : Symmetry handling                             
+  Simone Kossmann        : meta-GGA functionals, TD-DFT gradient, OOMP2, (MP2 Hessian; deprecated post 5.0) 
+  Lucas Lang             : DCDCAS, Hyperfine gauge corrections, ICE-SOC+SSC
+  Marvin Lechner         : AUTO-CI (C++ implementation), FIC-MRCC        
+  Spencer Leger          : CASSCF response                               
+  Dagmar Lenk            : GEPOL surface, SMD, ORCA-2-JSON               
+  Dimitrios Liakos       : Extrapolation schemes; Compound Job, Property file
+  Dimitrios Manganas     : Further ROCIS development; embedding schemes. LFT, Crystal Embedding 
+  Dimitrios Pantazis     : SARC Basis sets                               
+  Anastasios Papadopoulos: AUTO-CI, single reference methods and gradients 
+  Taras Petrenko         : pre 6.0 DFT Hessian and TD-DFT gradient,  ECA, NRVS 
+  Petra Pikulova         : Analytic Raman intensities                    
+  Peter Pinski           : DLPNO-MP2, DLPNO-MP2 Gradient                 
+  Shashank Vittal Rao    : ES-AILFT, MagRelax                            
+  Christoph Reimann      : Effective Core Potentials                     
+  Marius Retegan         : Local ZFS, SOC                                
+  Christoph Riplinger    : Optimizer, TS searches, QM/MM, DLPNO-CCSD(T), (RO)-DLPNO pert. Triples 
+  Michael Roemelt        : Original ROCIS implementation, recursive CI coupling coefficients
+  Masaaki Saitow         : Open-shell DLPNO-CCSD energy and density      
+  Barbara Sandhoefer     : DKH picture change effects                    
+  Yorick L. A. Schmerwitz: GMF and freeze-and-release deltaSCF, NEB S-IDPP initial path                    
+  Kantharuban Sivalingam : CASSCF convergence/infrastructure, NEVPT2, NEVPT3, NEVPT4(SD), FIC-MRCI and CEPA variants
+  Bernardo de Souza      : ESD, SOC TD-DFT                               
+  Georgi L. Stoychev     : AutoAux, RI-MP2 NMR, DLPNO-MP2 response, X2C  
+  Van Anh Tran           : RI-MP2 g-tensors                              
+  Willem Van den Heuvel  : Paramagnetic NMR                              
+  Zikuan Wang            : NOTCH, Electric field optimization            
+  Frank Wennmohs         : Technical directorship and infrastructure     
+  Hang Xu                : AUTO-CI-Response properties                   
+                                                                         
+[FACCTs GmbH]                                                            
+  Markus Bursch, Nicolas Foglia, Miquel Garcia-Rates, Ingolf Harden, Hagen Neugebauer, Anastasios Papadopoulos, 
+  Christoph Riplinger, Bernardo de Souza, Georgi L. Stoychev                                                    
+                                                                 
+  APM, various basis sets, CI-OPT, improved COSX, DLPNO-Multilevel,           
+  DOCKER, DRACO, updates on ESD, Fragmentator, GOAT, IRC, LR-CPCM, L-BFGS, MBIS, meta-GGA TD-DFT gradient, ML-optimized integration grids, 
+  MM, NACMEs, nearIR, NEB, NEB-TS, NL-DFT gradient (VV10), 2- and 3-layer-ONIOM, interface openCOSMO-RS, QMMM,   
+  Crystal-QMMM, RESP, rigid body optimization, SF, symmetry and pop. for TD-DFT, various functionals, SOLVATOR                                   
+                                                                         
+[Other institutions]                                                     
+  V. Asgeirsson          : NEB                                           
+  Christoph Bannwarth    : sTDA-DFT, sTD-DFT, PBEh-3c, B97-3c, D3        
+  Giovanni Bistoni       : ETS/NOCV, ADLD/ADEX, COVALED                  
+  Martin Brehm           : Molecular dynamics                            
+  Ronald Cardenas        : ETS/NOCV                                      
+  Martina Colucci        : COVALED                                       
+  Sebastian Ehlert       : rSCAN, r2SCAN, r2SCAN-3c, D4, dhf basis sets  
+  Marvin Friede          : D4 for Fr, Ra, Ac-Lr                          
+  Lars Goerigk           : TD-DFT with DH, B97 family of functionals     
+  Stefan Grimme          : VdW corrections, initial TS optimization, DFT functionals, gCP, sTDA/sTD-DF 
+  Waldemar Hujo          : DFT-NL                                        
+  H. Jonsson             : NEB                                           
+  Holger Kruse           : gCP                                           
+  Marcel Mueller         : wB97X-3c, vDZP basis set                      
+  Hagen Neugebauer       : wr2SCAN, Native XTB                           
+  Gianluca Regni         : ADLD/ADEX                                     
+  Tobias Risthaus        : pre 6.0 range-separated hybrid DFT and stability analysis
+  Lukas Wittmann         : regularized MP2, r2SCAN double-hybrids, wr2SCAN        
+                                                                         
+We gratefully acknowledge several colleagues who have allowed us to      
+interface, adapt or use parts of their codes:                            
+  Ed Valeev, F. Pavosevic, A. Kumar             : LibInt (2-el integral package), F12 methods 
+  Garnet Chan, S. Sharma, J. Yang, R. Olivares  : DMRG                   
+  Ulf Ekstrom                                   : XCFun DFT Library      
+  Mihaly Kallay                                 : mrcc  (arbitrary order and MRCC methods)
+  Frank Weinhold                                : gennbo (NPA and NBO analysis)           
+  Simon Mueller                                 : openCOSMO-RS                            
+  Christopher J. Cramer and Donald G. Truhlar   : smd solvation model                     
+  S Lehtola, MJT Oliveira, MAL Marques          : LibXC Library                           
+  Liviu Ungur et al                             : ANISO software                          
+
+
+ Your calculation uses the libint2 library for the computation of 2-el integrals
+ For citations please refer to: http://libint.valeyev.net
+
+ Your ORCA version has been built with support for libXC version: 7.0.0
+ For citations please refer to: https://libxc.gitlab.io
+
+ This ORCA versions uses:
+   CBLAS   interface :  Fast vector & matrix operations
+   LAPACKE interface :  Fast linear algebra routines
+   SCALAPACK package :  Parallel linear algebra routines
+   Shared memory     :  Shared parallel matrices
+   BLAS/LAPACK       :  OpenBLAS 0.3.29  USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell SINGLE_THREADED
+        Core in use  :  Haswell
+   Copyright (c) 2011-2014, The OpenBLAS Project
+
+
+  ***********************************
+  * Starting time: Sun Aug  9 00:26:52 2026
+  * Host name:     localhost.localdomain
+  * Process ID:    2641119
+  * Working dir.:  /home/dinglab/calculation/templates/NMR_modules/DP4plus/pps_eid_screening/CONF1/hf-3c
+  ***********************************
+
+NOTE: MaxCore=2500 MB was set to SCF,MP2,MDCI,CIPSI,MRCI,RASCI and CIS
+      => If you want to overwrite this, your respective input block should be placed after the MaxCore statement
+Your calculation utilizes the geometrical counterpoise correction gCP
+Please cite in your paper:
+H.Kruse, S. Grimme J.Chem.Phys., 136, (2012), 154101 
+   
+
+Your calculation utilizes the atom-pairwise dispersion correction
+with the Becke-Johnson damping scheme (D3BJ)
+
+
+================================================================================
+
+----- Orbital basis set information -----
+Your calculation utilizes the basis: MINIX,
+   a combination of small basis sets by S. Grimme (see manual for definitions).
+
+================================================================================
+                                        WARNINGS
+                       Please study these warnings very carefully!
+================================================================================
+
+WARNING: Old DensityContainer found on disk!
+         Will remove this file - 
+         If you want to keep old densities, please start your calculation with a different basename. 
+
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = inp
+|  1> ! hf-3c
+|  2> ! DEFGRID2
+|  3> ! scfconv6
+|  4> ! miniprint nopop noautostart
+|  5> %MaxCore 2500
+|  6> %pal
+|  7>     nprocs 12
+|  8> end
+|  9> *xyz 0 1
+| 10> C   -0.7315421785   1.5874641384   0.3024040558
+| 11> C   -1.1180567472   1.1933690688  -1.1471229871
+| 12> C   -2.3501639131   0.2746385586  -1.3014233596
+| 13> C   -2.0678189835  -1.2085324324  -0.9853593588
+| 14> C   -1.6147825814  -1.4849028977   0.4650605885
+| 15> C   -0.1661224040  -1.0034186799   0.7468677092
+| 16> C    0.0910249456   0.5004136312   1.0431335863
+| 17> C    0.3052148327   2.7399920560   0.2179860062
+| 18> C    1.6118111621   2.0298422286  -0.1979570907
+| 19> C    1.5692268087   0.6942609139   0.5892137661
+| 20> O    0.6802554427  -1.3168134388  -0.3488773710
+| 21> C    1.9200101873  -0.6361753811  -0.1768700634
+| 22> H   -0.0054448935   0.6784272866   2.1042358950
+| 23> H    2.2169562511   0.7724376041   1.4492940468
+| 24> H    0.1740107242  -1.5468700577   1.6316348764
+| 25> C   -1.6858474717  -3.0109954271   0.7316361451
+| 26> C    2.5531558297  -0.4455035592  -1.5775446516
+| 27> C    2.8786911203  -1.4984254162   0.7005107339
+| 28> C   -1.9664059597   2.0304262969   1.1172924594
+| 29> H   -1.3172143975   2.1121466884  -1.6836024038
+| 30> H   -0.2722128023   0.7189045144  -1.6238695354
+| 31> H   -3.1625445654   0.6340383006  -0.6855766486
+| 32> H   -2.6866425409   0.3378177213  -2.3300233453
+| 33> H   -1.3013257067  -1.5810099249  -1.6539027061
+| 34> H   -2.9692577217  -1.7791734551  -1.1720975777
+| 35> H   -2.2770983816  -0.9794448891   1.1560198043
+| 36> H    0.4253486017   3.1891671827   1.1951625575
+| 37> H    0.0037439602   3.5130214796  -0.4754603091
+| 38> H    1.6149442665   1.8623674263  -1.2634800384
+| 39> H    2.4926311806   2.6096680816   0.0445533751
+| 40> H   -1.4106154635  -3.2385075557   1.7542980279
+| 41> H   -2.6877774108  -3.3818684235   0.5526263761
+| 42> H   -1.0023193397  -3.5282184430   0.0680158258
+| 43> H    1.8509186224   0.0210713540  -2.2562895307
+| 44> H    3.4425385287   0.1694617105  -1.5078310040
+| 45> H    2.8268578015  -1.4132601883  -1.9818628667
+| 46> H    3.0275181917  -2.4679028420   0.2399570841
+| 47> H    3.8377961269  -1.0032713903   0.7941616670
+| 48> H    2.4662474758  -1.6419995084   1.6910454915
+| 49> H   -2.6253891424   1.1981304984   1.3207765145
+| 50> H   -1.6513374204   2.4511899261   2.0638425269
+| 51> H   -2.5248491540   2.7841556269   0.5755167540
+| 52> *
+| 53> 
+| 54>                          ****END OF INPUT****
+================================================================================
+
+                       ****************************
+                       * Single Point Calculation *
+                       ****************************
+
+---------------------------------
+CARTESIAN COORDINATES (ANGSTROEM)
+---------------------------------
+  C     -0.731542    1.587464    0.302404
+  C     -1.118057    1.193369   -1.147123
+  C     -2.350164    0.274639   -1.301423
+  C     -2.067819   -1.208532   -0.985359
+  C     -1.614783   -1.484903    0.465061
+  C     -0.166122   -1.003419    0.746868
+  C      0.091025    0.500414    1.043134
+  C      0.305215    2.739992    0.217986
+  C      1.611811    2.029842   -0.197957
+  C      1.569227    0.694261    0.589214
+  O      0.680255   -1.316813   -0.348877
+  C      1.920010   -0.636175   -0.176870
+  H     -0.005445    0.678427    2.104236
+  H      2.216956    0.772438    1.449294
+  H      0.174011   -1.546870    1.631635
+  C     -1.685847   -3.010995    0.731636
+  C      2.553156   -0.445504   -1.577545
+  C      2.878691   -1.498425    0.700511
+  C     -1.966406    2.030426    1.117292
+  H     -1.317214    2.112147   -1.683602
+  H     -0.272213    0.718905   -1.623870
+  H     -3.162545    0.634038   -0.685577
+  H     -2.686643    0.337818   -2.330023
+  H     -1.301326   -1.581010   -1.653903
+  H     -2.969258   -1.779173   -1.172098
+  H     -2.277098   -0.979445    1.156020
+  H      0.425349    3.189167    1.195163
+  H      0.003744    3.513021   -0.475460
+  H      1.614944    1.862367   -1.263480
+  H      2.492631    2.609668    0.044553
+  H     -1.410615   -3.238508    1.754298
+  H     -2.687777   -3.381868    0.552626
+  H     -1.002319   -3.528218    0.068016
+  H      1.850919    0.021071   -2.256290
+  H      3.442539    0.169462   -1.507831
+  H      2.826858   -1.413260   -1.981863
+  H      3.027518   -2.467903    0.239957
+  H      3.837796   -1.003271    0.794162
+  H      2.466247   -1.642000    1.691045
+  H     -2.625389    1.198130    1.320777
+  H     -1.651337    2.451190    2.063843
+  H     -2.524849    2.784156    0.575517
+
+----------------------------
+CARTESIAN COORDINATES (A.U.)
+----------------------------
+  NO LB      ZA    FRAG     MASS         X           Y           Z
+   0 C     6.0000    0    12.011   -1.382414    2.999872    0.571461
+   1 C     6.0000    0    12.011   -2.112821    2.255141   -2.167748
+   2 C     6.0000    0    12.011   -4.441166    0.518992   -2.459334
+   3 C     6.0000    0    12.011   -3.907612   -2.283795   -1.862059
+   4 C     6.0000    0    12.011   -3.051497   -2.806060    0.878837
+   5 C     6.0000    0    12.011   -0.313926   -1.896187    1.411375
+   6 C     6.0000    0    12.011    0.172012    0.945645    1.971237
+   7 C     6.0000    0    12.011    0.576772    5.177835    0.411934
+   8 C     6.0000    0    12.011    3.045882    3.835846   -0.374085
+   9 C     6.0000    0    12.011    2.965409    1.311963    1.113453
+  10 O     8.0000    0    15.999    1.285496   -2.488417   -0.659283
+  11 C     6.0000    0    12.011    3.628293   -1.202197   -0.334236
+  12 H     1.0000    0     1.008   -0.010289    1.282042    3.976430
+  13 H     1.0000    0     1.008    4.189440    1.459696    2.738769
+  14 H     1.0000    0     1.008    0.328833   -2.923161    3.083343
+  15 C     6.0000    0    12.011   -3.185790   -5.689957    1.382592
+  16 C     6.0000    0    12.011    4.824765   -0.841880   -2.981127
+  17 C     6.0000    0    12.011    5.439938   -2.831614    1.323773
+  18 C     6.0000    0    12.011   -3.715969    3.836950    2.111377
+  19 H     1.0000    0     1.008   -2.489174    3.991379   -3.181547
+  20 H     1.0000    0     1.008   -0.514408    1.358533   -3.068669
+  21 H     1.0000    0     1.008   -5.976343    1.198159   -1.295552
+  22 H     1.0000    0     1.008   -5.077019    0.638383   -4.403106
+  23 H     1.0000    0     1.008   -2.459149   -2.987676   -3.125423
+  24 H     1.0000    0     1.008   -5.611084   -3.362151   -2.214943
+  25 H     1.0000    0     1.008   -4.303092   -1.850883    2.184561
+  26 H     1.0000    0     1.008    0.803792    6.026653    2.258530
+  27 H     1.0000    0     1.008    0.007075    6.638648   -0.898490
+  28 H     1.0000    0     1.008    3.051802    3.519364   -2.387631
+  29 H     1.0000    0     1.008    4.710390    4.931558    0.084194
+  30 H     1.0000    0     1.008   -2.665677   -6.119892    3.315143
+  31 H     1.0000    0     1.008   -5.079163   -6.390805    1.044313
+  32 H     1.0000    0     1.008   -1.894109   -6.667367    0.128531
+  33 H     1.0000    0     1.008    3.497729    0.039819   -4.263769
+  34 H     1.0000    0     1.008    6.505455    0.320236   -2.849388
+  35 H     1.0000    0     1.008    5.341987   -2.670675   -3.745178
+  36 H     1.0000    0     1.008    5.721180   -4.663660    0.453453
+  37 H     1.0000    0     1.008    7.252384   -1.895908    1.500748
+  38 H     1.0000    0     1.008    4.660532   -3.102929    3.195613
+  39 H     1.0000    0     1.008   -4.961266    2.264139    2.495906
+  40 H     1.0000    0     1.008   -3.120575    4.632078    3.900097
+  41 H     1.0000    0     1.008   -4.771273    5.261292    1.087569
+
+
+
+           ************************************************************
+           *        Program running with 12 parallel MPI-processes    *
+           *              working on a common directory               *
+           ************************************************************
+------------------------------------------------------------------------------
+                   ___                                                        
+                  /   \      - P O W E R E D   B Y -                         
+                 /     \                                                     
+                 |  |  |   _    _      __       _____    __    __             
+                 |  |  |  | |  | |    /  \     |  _  \  |  |  /  |          
+                  \  \/   | |  | |   /    \    | | | |  |  | /  /          
+                 / \  \   | |__| |  /  /\  \   | |_| |  |  |/  /          
+                |  |  |   |  __  | /  /__\  \  |    /   |      \           
+                |  |  |   | |  | | |   __   |  |    \   |  |\   \          
+                \     /   | |  | | |  |  |  |  | |\  \  |  | \   \       
+                 \___/    |_|  |_| |__|  |__|  |_| \__\ |__|  \__/        
+                                                                              
+                      - O R C A' S   B I G   F R I E N D -                    
+                                      &                                       
+                       - I N T E G R A L  F E E D E R -                       
+                                                                              
+ v1 FN, 2020, v2 2021, v3 2022-2024                                           
+------------------------------------------------------------------------------
+
+
+----------------------
+SHARK INTEGRAL PACKAGE
+----------------------
+
+Number of atoms                             ...     42
+Number of basis functions                   ...    106
+Number of shells                            ...     74
+Maximum angular momentum                    ...      1
+Integral batch strategy                     ... SHARK/LIBINT Hybrid
+RI-J (if used) integral strategy            ... SPLIT-RIJ (Revised 2003 algorithm where possible)
+Printlevel                                  ...      1
+Contraction scheme used                     ... SEGMENTED contraction
+Prescreening option                         ... SCHWARTZ
+   Thresh                                   ... 1.000e-10
+   Tcut                                     ... 1.000e-11
+   Tpresel                                  ... 1.000e-11 
+Coulomb Range Separation                    ... NOT USED
+Exchange Range Separation                   ... NOT USED
+Multipole approximations                    ... NOT USED
+Finite Nucleus Model                        ... NOT USED
+CABS basis                                  ... NOT available
+Auxiliary Coulomb fitting basis             ... NOT available
+Auxiliary J/K fitting basis                 ... NOT available
+Auxiliary Correlation fitting basis         ... NOT available
+Auxiliary 'external' fitting basis          ... NOT available
+
+Checking pre-screening integrals            ... done (  0.0 sec) Dimension = 74
+   => SHARK Basis and OBASIS are compatible. Storing Pre-screening
+Shell pair information
+Shell pair cut-off parameter TPreSel        ...   1.0e-11
+Total number of shell pairs                 ...      2775
+Shell pairs after pre-screening             ...      2594
+Total number of primitive shell pairs       ...     24975
+Primitive shell pairs kept                  ...     14515
+          la=0 lb=0:   1541 shell pairs
+          la=1 lb=0:    917 shell pairs
+          la=1 lb=1:    136 shell pairs
+
+Checking whether 4 symmetric matrices of dimension 106 fit in memory
+:Max Core in MB      =   2500.00
+ MB in use           =      5.18
+ MB left             =   2494.82
+ MB needed           =      0.17
+ Data fit in memory  = YES
+Calculating Nuclear repulsion               ... done (  0.0 sec) ENN=   1297.401287967710 Eh
+Entering conventional section               ... 
+Calculating 4-index integrals               ...     -> SHARK/Ints2Disk: Thresh =     1.000000e-10 TCut=    1.000000e-11 
+    -> calling libint FockFlag=2 Lmax_loc=1
+    ->Total LIBINT loop time =    0.000 sec
+    -> L=0 0 0 0:     0.064 sec done=    921181 (=100.0%) skipped=         0 
+    -> L=1 0 0 0:     0.121 sec done=   1213460 (=100.0%) skipped=         0 
+    -> L=1 0 1 0:     0.067 sec done=    392209 (=100.0%) skipped=         0 
+    -> L=1 1 0 0:     0.037 sec done=    196070 (=100.0%) skipped=         0 
+    -> L=1 1 1 0:     0.050 sec done=    122463 (=100.0%) skipped=         0 
+    -> L=1 1 1 1:     0.011 sec done=      9304 (=100.0%) skipped=         0 
+    ->Total SHARK integral loop time =    0.455 sec
+    -> Total Integral generation matrix time =    0.466 sec
+    -> Number of small integrals   =   2093772
+    -> Number of medium integrals  =   4009851
+    -> Number of large integrals   =   6488486
+    -> Number of MB stored         =       119 MB
+
+done (  0.5 sec)
+Leaving conventional section
+
+Diagonalization of the overlap matrix:
+Smallest eigenvalue                        ... 2.051e-01
+Time for diagonalization                   ...    0.002 sec
+Threshold for overlap eigenvalues          ... 1.000e-07
+Number of eigenvalues below threshold      ... 0
+Time for construction of square roots      ...    0.001 sec
+Total time needed                          ...    0.004 sec
+
+-------------------
+DFT GRID GENERATION
+-------------------
+
+General Integration Accuracy     IntAcc      ... 4.388
+Radial Grid Type                 RadialGrid  ... OptM3 with GC (2021)
+Angular Grid (max. ang.)         AngularGrid ... 4 (Lebedev-302)
+Angular grid pruning method      GridPruning ... 4 (adaptive)
+Weight generation scheme         WeightScheme... mBecke (2022)
+Basis function cutoff            BFCut       ... 1.0000e-10
+Integration weight cutoff        WCut        ... 1.0000e-14
+Partially contracted basis set               ... off
+Rotationally invariant grid construction     ... off
+Angular grids for H and He will be reduced by one unit
+
+Total number of grid points                  ...   176120
+Total number of batches                      ...     2769
+Average number of points per batch           ...       63
+Average number of grid points per atom       ...     4193
+Grids setup in   1.0 sec
+Initializing property integral containers    ... done (  0.0 sec)
+
+SHARK setup successfully completed in   1.6 seconds
+
+Maximum memory used throughout the entire STARTUP-calculation: 37.1 MB
+
+
+           ************************************************************
+           *        Program running with 12 parallel MPI-processes    *
+           *              working on a common directory               *
+           ************************************************************
+             **** ENERGY FILE WAS UPDATED (inp.en.tmp) ****
+Finished Guess after   0.1 sec
+Maximum memory used throughout the entire GUESS-calculation: 6.7 MB
+
+
+           ************************************************************
+           *        Program running with 12 parallel MPI-processes    *
+           *              working on a common directory               *
+           ************************************************************
+
+ InCore treatment chosen for four center integrals:
+   Memory dedicated               ...    2500 MB
+   Memory needed                  ...     10 MB
+   Number of tiny    integrals    ... 2093772
+   Number of small   integrals    ... 4009851
+   Number of regular integrals    ... 6488486
+
+----------------------------------------D-I-I-S--------------------------------------------
+Iteration    Energy (Eh)           Delta-E    RMSDP     MaxDP     DIISErr   Damp  Time(sec)
+-------------------------------------------------------------------------------------------
+    1    -653.0530759135622247     0.00e+00  1.48e-02  8.61e-02  1.97e-01  0.700   0.1
+    2    -653.2312888117237435    -1.78e-01  1.24e-02  6.94e-02  1.42e-01  0.700   0.1
+                               ***Turning on AO-DIIS***
+    3    -653.3603087450671865    -1.29e-01  9.13e-03  4.24e-02  1.02e-01  0.700   0.1
+    4    -653.4524606791221686    -9.22e-02  6.84e-03  3.23e-02  7.16e-02  0.700   0.1
+    5    -653.5184465754286975    -6.60e-02  1.69e-02  8.41e-02  5.02e-02  0.000   0.1
+    6    -653.6790848608964097    -1.61e-01  1.41e-03  1.37e-02  4.16e-03  0.000   0.1
+                              *** Initializing SOSCF ***
+---------------------------------------S-O-S-C-F--------------------------------------
+Iteration    Energy (Eh)           Delta-E    RMSDP     MaxDP     MaxGrad    Time(sec)
+--------------------------------------------------------------------------------------
+    7    -653.6793071197644167    -2.22e-04  9.01e-04  9.42e-03  2.15e-03     0.1
+    8    -653.6793687626159226    -6.16e-05  3.20e-04  2.79e-03  6.66e-04     0.1
+    9    -653.6793772101937066    -8.45e-06  2.43e-04  2.34e-03  2.41e-04     0.1
+   10    -653.6793791102345494    -1.90e-06  1.86e-05  9.59e-05  2.81e-05     0.1
+                  *** Gradient check signals convergence ***
+
+               *****************************************************
+               *                     SUCCESS                       *
+               *           SCF CONVERGED AFTER  10 CYCLES          *
+               *****************************************************
+
+             **** ENERGY FILE WAS UPDATED (inp.en.tmp) ****
+
+----------------
+TOTAL SCF ENERGY
+----------------
+
+Total Energy       :       -653.67937913741844 Eh          -17787.52021 eV
+
+Components:
+Nuclear Repulsion  :       1297.40128796770978 Eh           35304.08387 eV
+Electronic Energy  :      -1951.08066710512821 Eh          -53091.60408 eV
+One Electron Energy:      -3465.47812471175757 Eh          -94300.45392 eV
+Two Electron Energy:       1514.39745760662936 Eh           41208.84984 eV
+
+Virial components:
+Potential Energy   :      -1305.21718415745045 Eh          -35516.76522 eV
+Kinetic Energy     :        651.53780502003201 Eh           17729.24501 eV
+Virial Ratio       :          2.00328695296096
+
+---------------
+SCF CONVERGENCE
+---------------
+
+  Last Energy change         ...    1.9000e-06  Tolerance :   1.0000e-06
+  Last MAX-Density change    ...    9.5946e-05  Tolerance :   1.0000e-05
+  Last RMS-Density change    ...    1.8551e-05  Tolerance :   1.0000e-06
+  Last DIIS Error            ...    2.1489e-03  Tolerance :   1.0000e-06
+  Last Orbital Gradient      ...    2.8064e-05  Tolerance :   3.3300e-04
+  Last Orbital Rotation      ...    1.9885e-05  Tolerance :   3.3300e-04
+
+
+----------------
+ORBITAL ENERGIES
+----------------
+
+  NO   OCC          E(Eh)            E(eV) 
+   0   2.0000     -20.279984      -551.8464 
+   1   2.0000     -11.222196      -305.3715 
+   2   2.0000     -11.204504      -304.8900 
+   3   2.0000     -11.164294      -303.7959 
+   4   2.0000     -11.159436      -303.6637 
+   5   2.0000     -11.151335      -303.4433 
+   6   2.0000     -11.147856      -303.3486 
+   7   2.0000     -11.145669      -303.2891 
+   8   2.0000     -11.142343      -303.1986 
+   9   2.0000     -11.141148      -303.1661 
+  10   2.0000     -11.140586      -303.1507 
+  11   2.0000     -11.138335      -303.0895 
+  12   2.0000     -11.137191      -303.0584 
+  13   2.0000     -11.136240      -303.0325 
+  14   2.0000     -11.135701      -303.0178 
+  15   2.0000     -11.132145      -302.9211 
+  16   2.0000      -1.359662       -36.9983 
+  17   2.0000      -1.149153       -31.2700 
+  18   2.0000      -1.097650       -29.8686 
+  19   2.0000      -1.047296       -28.4984 
+  20   2.0000      -1.039665       -28.2907 
+  21   2.0000      -0.993446       -27.0330 
+  22   2.0000      -0.984546       -26.7909 
+  23   2.0000      -0.935940       -25.4682 
+  24   2.0000      -0.920812       -25.0566 
+  25   2.0000      -0.904206       -24.6047 
+  26   2.0000      -0.868756       -23.6401 
+  27   2.0000      -0.828844       -22.5540 
+  28   2.0000      -0.796303       -21.6685 
+  29   2.0000      -0.758045       -20.6274 
+  30   2.0000      -0.733281       -19.9536 
+  31   2.0000      -0.708994       -19.2927 
+  32   2.0000      -0.673976       -18.3398 
+  33   2.0000      -0.658943       -17.9307 
+  34   2.0000      -0.644414       -17.5354 
+  35   2.0000      -0.618593       -16.8328 
+  36   2.0000      -0.611406       -16.6372 
+  37   2.0000      -0.601422       -16.3655 
+  38   2.0000      -0.591337       -16.0911 
+  39   2.0000      -0.590995       -16.0818 
+  40   2.0000      -0.573568       -15.6076 
+  41   2.0000      -0.562187       -15.2979 
+  42   2.0000      -0.553341       -15.0572 
+  43   2.0000      -0.548276       -14.9193 
+  44   2.0000      -0.541701       -14.7404 
+  45   2.0000      -0.532493       -14.4899 
+  46   2.0000      -0.531733       -14.4692 
+  47   2.0000      -0.516572       -14.0566 
+  48   2.0000      -0.509537       -13.8652 
+  49   2.0000      -0.505338       -13.7509 
+  50   2.0000      -0.484923       -13.1954 
+  51   2.0000      -0.480561       -13.0767 
+  52   2.0000      -0.473342       -12.8803 
+  53   2.0000      -0.457782       -12.4569 
+  54   2.0000      -0.448439       -12.2026 
+  55   2.0000      -0.446400       -12.1472 
+  56   2.0000      -0.436308       -11.8725 
+  57   2.0000      -0.433292       -11.7905 
+  58   2.0000      -0.423189       -11.5156 
+  59   2.0000      -0.415149       -11.2968 
+  60   2.0000      -0.406621       -11.0647 
+  61   2.0000      -0.364209        -9.9106 
+  62   0.0000       0.450171        12.2498 
+  63   0.0000       0.468869        12.7586 
+  64   0.0000       0.480733        13.0814 
+  65   0.0000       0.523109        14.2345 
+  66   0.0000       0.548785        14.9332 
+  67   0.0000       0.558850        15.2071 
+  68   0.0000       0.562808        15.3148 
+  69   0.0000       0.566957        15.4277 
+  70   0.0000       0.568951        15.4819 
+  71   0.0000       0.579506        15.7692 
+  72   0.0000       0.589613        16.0442 
+*Only the first 10 virtual orbitals were printed.
+Total SCF time: 0 days 0 hours 0 min 0 sec 
+Finished LeanSCF after   0.8 sec
+
+Maximum memory used throughout the entire LEANSCF-calculation: 65.5 MB
+
+
+-------------------------------------------------------------------------------
+                          DFT DISPERSION CORRECTION                            
+                                                                               
+                              DFTD3 V3.1  Rev 1                                
+                          USING Becke-Johnson damping                          
+-------------------------------------------------------------------------------
+-------------------------   ----------------
+Dispersion correction           -0.211708313
+-------------------------   ----------------
+
+------------------   -----------------
+gCP+bas correction         0.004731745
+------------------   -----------------
+----------------------------   ----------------
+Total correction to HF/MINIX       -0.206976567
+----------------------------   ----------------
+
+
+-------------------------   --------------------
+FINAL SINGLE POINT ENERGY      -653.886355704719
+-------------------------   --------------------
+
+
+
+           ************************************************************
+           *        Program running with 12 parallel MPI-processes    *
+           *              working on a common directory               *
+           ************************************************************
+
+------------------------------------------------------------------------------
+                              ORCA PROPERTY CALCULATIONS
+------------------------------------------------------------------------------
+
+GBWName                                 ... inp.gbw
+Number of atoms                         ...     42
+Number of basis functions               ...    106
+Max core memory                         ...   2500 MB
+
+Electric properties:
+Dipole moment                           ... YES
+Quadrupole moment                       ...  NO
+Static polarizability (Dipole/Dipole)   ...  NO
+Static polarizability (Dipole/Quad.)    ...  NO
+Static polarizability (Quad./Quad.)     ...  NO
+Static polarizability (Velocity)        ...  NO
+Static hyperpolarizability              ...  NO
+
+Atomic electric properties:
+Dipole moment                           ...  NO
+Quadrupole moment                       ...  NO
+Static polarizability                   ...  NO
+
+Choice of electric origin               ... Center of mass
+Position of electric origin             ...     0.000757     0.005061     0.006503
+
+General magnetic properties:
+Magnetizability                         ...  NO
+
+EPR properties:
+g-Tensor (aka g-matrix)                 ...  NO
+Zero-Field splitting spin-orbit         ...  NO
+Zero-field splitting spin-spin          ...  NO
+Hyperfine couplings                     ...  NO (   0 nuclei)
+Quadrupole couplings                    ...  NO (   0 nuclei)
+Contact density                         ...  NO (   0 nuclei)
+
+NMR properties:
+Chemical shifts                         ...  NO (   0 nuclei)
+Spin-rotation constants                 ...  NO (   0 nuclei)
+Spin-spin couplings                     ...  NO (   0 nuclei,    0 pairs)
+
+Choice of magnetic origin               ... GIAO
+Position of magnetic origin             ...     0.000000     0.000000     0.000000
+
+Properties with geometric perturbations:
+SCF Hessian                             ...  NO
+IR spectrum                             ...  NO
+VCD spectrum                            ...  NO
+X-ray spectroscopy properties:
+SCF XES/XAS/RIXS spectra                ...  NO
+
+SCF SOC stabilization energy            ...  NO
+Diagonal Born-Oppenheimer correction    ...  NO
+
+-------------
+DIPOLE MOMENT
+-------------
+
+Method             : SCF
+Type of density    : Electron Density
+Multiplicity       :   1
+Irrep              :   0
+Energy             :  -653.6793791374184366 Eh
+Basis              : AO
+                                X                 Y                 Z
+Electronic contribution:      1.583609940       0.031302686       0.495804490
+Nuclear contribution   :     -1.420594767       0.375316083      -0.082449703
+                        -----------------------------------------
+Total Dipole Moment    :      0.163015173       0.406618769       0.413354787
+                        -----------------------------------------
+Magnitude (a.u.)       :      0.602308019
+Magnitude (Debye)      :      1.530945319
+
+
+
+--------------------
+Rotational spectrum 
+--------------------
+ 
+Rotational constants in cm-1:             0.021785             0.019544             0.013422 
+Rotational constants in MHz :           653.098333           585.913507           402.394465 
+
+Dipole components along the rotational axes: 
+x,y,z [a.u.] :     0.181643    -0.394331     0.417473 
+x,y,z [Debye]:     0.461700    -1.002310     1.061132 
+
+ 
+
+Dipole moment calculation done in   0.0 sec 
+
+Maximum memory used throughout the entire PROP-calculation: 5.7 MB
+
+--------------------------------
+SUGGESTED CITATIONS FOR THIS RUN
+--------------------------------
+
+Below you find a list of papers that are relevant to this ORCA run
+We neither can nor want to force you to cite these papers, but we appreciate if you do
+You receive ORCA, which is the product of decades of hard work by many enthusiastic individuals, for free
+The only thing we kindly ask in return is that you cite our papers,
+We deeply appreciate it, if you show your appreciation for ORCA by not just citing the generic ORCA reference.
+
+Please note that relegating all ORCA citations to the supporting information does *not* help us.
+SI sections are not indexed - citations you put there will not count into any citation statistics
+But we need these citations in order to attract the funding resources that allow us to do what we are doing
+
+Therefore, if you are a happy ORCA user, please consider citing a few of the papers listed below in the main body of your paper
+
+In addition to the list printed below, the program has created the file inp.bibtex that contains the list in bibtex format
+You can import this file easily into all common literature databanks and citation aid programs
+
+It goes without saying that in many instances, there are alternative algorithms to achieve similar
+results as the ones you have gotten from ORCA. It is, of course, also the case that in some instances
+ORCA just re-implements algorithms worked out by others. We are fully aware of that and we are also
+fully appreciative of our colleagues work. Hence this citation list should not be read as indicating
+that the listed papers, which are focused on our own work, are the only ones worth citing. It simply
+meant to make it easier for users to cite ORCA specific papers. It is not a substitute for doing your
+own literature research and citing the relevant literature in a scientifically appropriate manner.
+
+List of essential papers. We consider these as the minimum necessary citations
+
+  1. Neese, F.
+     Software update: the ORCA program system, version 6.0
+     WIRES Comput. Molec. Sci. 2025 15(1), e70019
+     doi.org/10.1002/wcms.70019
+
+List of papers to cite with high priority. The work reported in these papers was absolutely
+necessary for this run to complete.
+Our perspective: the developers of density functionals and basis sets usually get cited in chemistry papers
+Good! But without the algorithms to do something with them, the functionals or basis sets would not do anything.
+Hence, in our opinion, the algorithm design and method developments papers are equally worthy of getting cited
+
+  1. Grimme, S.; Antony, J.; Ehrlich, S.; Krieg, H.
+     A consistent and accurate ab initio parametrization of density functional dispersion correction (DFT-D) for the 94 elements H-Pu
+     J. Chem. Phys. 2010 132 , 154104
+     doi.org/10.1063/1.3382344
+  2. Grimme, S.; Ehrlich, S.; Goerigk, L.
+     Effect of the damping function in dispersion corrected density functional theory
+     J. Comput. Chem. 2011 32(7), 1456-1465
+     doi.org/10.1002/jcc.21759
+  3. Neese, F.
+     The SHARK Integral Generation and Digestion System
+     J. Comp. Chem. 2022 44(3), 381
+     doi.org/10.1002/jcc.26942
+
+List of suggested additional citations. These are papers that are important in the 'surrounding' of 
+of this run, or papers that preceded the highly important papers. If you like your results we are grateful for a citation.
+
+  1. Neese, F.
+     The ORCA program system
+     WIRES Comput. Molec. Sci. 2012 2(1), 73-78
+     doi.org/10.1002/wcms.81
+  2. Neese, F.
+     Software update: the ORCA program system, version 4.0
+     WIRES Comput. Molec. Sci. 2018 8(1), 1-6
+     doi.org/10.1002/wcms.1327
+  3. Neese, F.; Wennmohs, F.; Becker, U.; Riplinger, C.
+     The ORCA quantum chemistry program package
+     J. Chem. Phys. 2020 152(22), 224108
+     doi.org/10.1063/5.0004608
+  4. Neese, F.
+     Software update: The ORCA program system—Version 5.0
+     WIRES Comput. Molec. Sci. 2022 12(1), e1606
+     doi.org/10.1002/wcms.1606
+
+List of optional additional citations
+
+  1. Neese, F.
+     Approximate second-order SCF convergence for spin unrestricted wavefunctions
+     Chem. Phys. Lett. 2000 325(1-3), 93-98
+     doi.org/10.1016/s0009-2614(00)00662-x
+
+Timings for individual modules:
+
+Sum of individual times          ...        3.246 sec (=   0.054 min)
+Startup calculation              ...        1.737 sec (=   0.029 min)  53.5 %
+SCF iterations                   ...        1.283 sec (=   0.021 min)  39.5 %
+Property calculations            ...        0.226 sec (=   0.004 min)   7.0 %
+                             ****ORCA TERMINATED NORMALLY****
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 3 seconds 536 msec

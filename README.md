@@ -86,7 +86,7 @@ Python 3.9.25（安装依赖包tkinter：打开终端，运行`sudo yum install 
 
 ssmtp（安装：打开终端，运行`sudo yum install ssmtp`；用于发送提醒邮件，配置见后文）
 
-其中CREST、CENSO、ANMR、molclus和Multiwfn需加入环境变量。
+其中CREST、CENSO、ANMR、molclus和Multiwfn需加入环境变量，CREST、ANMR、molclus和Multiwfn需添加可执行权限。
 
 ### **4. 计算流程**
 
@@ -159,7 +159,7 @@ TMS[chcl3] revtpss[cpcm]/cc-pVTZ//b3lyp-3c[cpcm]
 				orcainput["disp"] = ["! d3bj ABC"]
 ```
 
-**[第五步]** 每个文件夹对应相应的计算模块，与文件夹同名的脚本用于执行整个计算流程，其中以下内容需根据本地计算资源修改：
+**[第五步]** 每个文件夹对应相应的计算模块，进入文件夹后在当前目录打开终端`chmod +x *`以为所有脚本添加可执行权限，与文件夹同名的脚本用于执行整个计算流程，其中以下内容需根据本地计算资源修改：
 
 ```
 mem_G=24
@@ -272,7 +272,7 @@ done
 rm ./*.mol
 ```
 
-其中第8行的xyz_selection.txt的目录应根据本机实际情况修改。该脚本可将当前目录下的所有.mol文件转换为.xyz文件。注意到此处刚转换产生的结构在GFN-FF分子力场下进行了几何优化产生新的.xyz文件，该操作有利于提高CREST程序进行后续分子动力学模拟过程中的稳健性。
+其中第8行的xyz_selection.txt的目录应根据本机实际情况修改。该脚本可将当前目录下的所有.mol文件转换为.xyz文件。注意到此处刚转换产生的结构在GFN-FF分子力场下进行了几何优化产生新的.xyz文件，该操作有利于提高CREST程序进行后续分子动力学模拟过程中的稳健性。在当前目录下打开终端，运行`chmod +x x2xyz.sh`以为脚本添加可执行权限。
 
 ### **6.** **算例演示以及数据处理**
 
@@ -282,7 +282,58 @@ rm ./*.mol
 
 <div align=center><img src="./pics/example_1.jpg" style="zoom:50%;" /></div>
 
+接下来笔者将演示利用DP4+区分这一对非对映异构体。首先在个人电脑上利用ChemDraw结合Chem3D生成rev_eid.mol和pps_eid.mol文件，分别对应修正结构（**1**）和原始推测结构（**2**）。再将这两个.mol文件传输至服务器上DP4plus文件夹中，打开终端，运行`x2xyz.sh`，即可转换为rev_eid.xyz和pps_eid.xyz。最终运行`./DP4plus`，弹出窗口如下图所示，选择输出压缩文件的位置后点击OK：
 
+<div align=center><img src="./pics/DP4plus_1.png" style="zoom:50%;" /></div>
+
+弹出窗口如下图所示，输入输出压缩文件的名称以及用于接收提醒邮件的电子邮箱地址后点击Start Calculation：
+
+<div align=center><img src="./pics/DP4plus_2.png" style="zoom:50%;" /></div>
+
+命令行要求选择并行任务数，选择完毕后按下回车：
+
+<div align=center><img src="./pics/DP4plus_3.png" style="zoom:50%;" /></div>
+
+弹出窗口如下图所示，选择溶剂benzene后按下OK，计算开始自动进行：
+
+<div align=center><img src="./pics/DP4plus_4.png" style="zoom:50%;" /></div>
+
+计算完毕，收到邮件提醒：
+
+> ```
+> DP4+ Calculation Done!
+> 
+> The calculation task has been completed, and the output file DP4plus_example.zip has been stored in the directory /home/dinglab/calculation/temp/xqd.
+> Used time: from 2026年 08月 09日 星期日 00:24:36 CST to 2026年 08月 09日 星期日 00:41:32 CST
+> ```
+
+可见任务耗时约为17 min，可关闭终端，进入输出压缩文件的位置，复制压缩文件至个人电脑后解压缩，准备处理数据：
+
+<div align=center><img src="./pics/DP4plus_5.png" style="zoom:50%;" /></div>
+
+在个人电脑上安装DP4plus-App用于处理数据，安装见https://github.com/Sarotti-Lab/DP4plus-App。笔者发现新版本的DP4plus-App识别文件名疑似存在BUG，此处建议安装0.2.8版本。首先将XXX_batch/nmr文件夹中的.out文件复制到同一目录下，运行DP4plus-App，调整相应的计算级别，点击NMR，选择该目录，结果如下图所示：
+
+<div align=center><img src="./pics/DP4plus_6.png" style="zoom:50%;" /></div>
+
+注意到程序判断不同异构体的方式为识别前缀，因此不同的异构体在文件命名时应当在前缀进行区分。
+
+接下来需要创建记录实验数据与关联原子编号的.xlsx文件，其格式规范见https://github.com/Sarotti-Lab/DP4plus-App，结果如下图所示：
+
+<div align=center><img src="./pics/DP4plus_7.png" style="zoom:50%;" /></div>
+
+此处exchange列中同一字母标记的为比较时可交换的一对原子，例如CH<sub>2</sub>上不等价的的氢。标记为可交换的原子的化学位移在比较时自动按计算数据大小顺序进行匹配。此例中偕二甲基的碳氢同理。建议同一批候选结构在生成3D结构时基于ChemDraw绘制的同一个结构，避免在此繁琐地逐个对照编号。若多个候选结构编号不一致时，可额外创建label 1、label 2、label 3三列，输入相应的另一套编号，对应次序与程序识别次序一致。原子编号可通过GaussView程序打开最初的.mol文件查看。
+
+点击Correlation，选择创建的.xlsx关联文件，点击Run，目录下生成DP4plus_results.xlsx文件并自动打开，结果如下图所示：
+
+<div align=center><img src="./pics/DP4plus_8.png" style="zoom:50%;" /></div>
+
+此处只需关注蓝色框中数据，可见修正后的结构对应的基于氢化学位移、碳化学位移以及综合两者下的DP4+概率均为100%，即DP4+可以判断出天然产物的结构应当为（**1**）。
+
+注意到合成课题组亦提供了合成的推测结构（**2**）的谱图数据，重新创建相应的.xlsx关联文件，重复上述操作，结果如下图所示：
+
+<div align=center><img src="./pics/DP4plus_9.png" style="zoom:50%;" /></div>
+
+此时原始文献推测结构的DP4+概率变为100%，故DP4+可以无误地区分这一对差向异构体。
 
 #### 6.2 MM-DP4+
 
