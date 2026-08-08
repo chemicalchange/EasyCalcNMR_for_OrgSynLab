@@ -282,7 +282,7 @@ rm ./*.mol
 
 <div align=center><img src="./pics/example_1.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用DP4+区分这一对非对映异构体。首先在个人电脑上利用ChemDraw结合Chem3D生成rev_eid.mol和pps_eid.mol文件，分别对应修正结构（**1**）和原始推测结构（**2**）。再将这两个.mol文件传输至服务器上DP4plus文件夹中，打开终端，运行`x2xyz.sh`，即可转换为rev_eid.xyz和pps_eid.xyz。最终运行`./DP4plus`，弹出窗口如下图所示，选择输出压缩文件的位置后点击OK：
+接下来笔者将演示利用DP4+区分这一对非对映异构体。首先在个人电脑上利用ChemDraw结合Chem3D生成rev_eid.mol和pps_eid.mol文件，分别对应修正结构（**1**）和原始推测结构（**2**）。再将这两个.mol文件传输至服务器上DP4+计算模块文件夹中，打开终端，运行`x2xyz.sh`，即可转换为rev_eid.xyz和pps_eid.xyz。最终运行`./DP4plus`，弹出窗口如下图所示，选择输出压缩文件的位置后点击OK：
 
 <div align=center><img src="./pics/DP4plus_1.png" style="zoom:50%;" /></div>
 
@@ -333,15 +333,43 @@ rm ./*.mol
 
 <div align=center><img src="./pics/DP4plus_9.png" style="zoom:50%;" /></div>
 
-此时原始文献推测结构的各项DP4+概率变为100%，故DP4+可以精准地区分这一对差向异构体。
+此时原始文献推测结构的各项DP4+概率变为100%，故DP4+可以精准地区分这一对非对映异构体。
+
+数据处理亦可通过使用DP4+计算模块文件夹中的tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.joc.1c00987](https://doi.org/10.1021/acs.joc.1c00987)，所需的构象平均后的磁屏蔽张量数据可从在XXX_result文件夹中的XXX_result.txt文本文件中获取。
 
 #### 6.2 MM-DP4+
 
+MM-DP4+的相应操作与DP4+完全类似，同样使用上述算例，打开终端，运行`./MM_DP4plus`，计算耗时约为15 min。由于该体系的构象数目较少，MM-DP4+在计算效率上相较DP4+未展示出显著优势。
 
+同样使用DP4plus-App处理数据，于MM-DP4+选项下调整相应的计算级别，重复类似操作，结果如下图所示：
+
+<div align=center><img src="./pics/MMDP4plus_1.png" style="zoom:50%;" /></div>
+
+MM-DP4+亦可以判断出天然产物的结构应当为（**1**）。此处程序警告计算级别不匹配为识别错误，可忽略。此外，处理数据前需进入DP4plus-App所在目录，找到data_base_MM.xlsx文件，将子表表名”Bezene“更正为”Benzene“可避免程序报错。
+
+类似地，数据处理亦可通过使用MM-DP4+计算模块文件夹中的tool文件夹中的Excel计算器手动完成。
 
 #### 6.3 dJ-DP4
 
+合成化学家在修正天然产物6,11-epoxyisodaucane的结构时，修正位点处的氢的耦合常数起到了重要的指示作用。同样使用该算例演示利用dJ-DP4区分这一对非对映异构体。
 
+运行操作类似，无选择溶剂环节，计算耗时约为19 min。构象平均后的磁屏蔽张量数据可从在XXX_result文件夹中的XXX_result.txt文本文件中获取：
+
+<div align=center><img src="./pics/dJDP4_1.png" style="zoom:50%;" /></div>
+
+此处标注Me的行表示甲基氢的磁屏蔽常数。
+
+构象平均后的耦合常数矩阵可从XXX_result文件夹中的XXX_J_result.csv文件中获取：
+
+<div align=center><img src="./pics/dJDP4_2.png" style="zoom:50%;" /></div>
+
+此处矩阵元表示两个相应编号的氢原子间的耦合常数，此例中关注的一对耦合常数已用黄色高亮。
+
+数据处理需通过dJ-DP4计算模块文件夹中的tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.orglett.9b01193](https://doi.org/10.1021/acs.orglett.9b01193)，结果如下图所示：
+
+<div align=center><img src="./pics/dJDP4_3.png" style="zoom:50%;" /></div>
+
+此处，第一列对应原始文献推测结构（**2**），第二列对应修正结构（**1**），可见dJ-DP4可以判断出天然产物的结构应当为（**1**）。注意到即使不考虑碳氢的化学位移，仅比较特征的耦合常数，修正结构（**1**）明显与实验数据更吻合。
 
 #### 6.4 ML-J-DP4
 
