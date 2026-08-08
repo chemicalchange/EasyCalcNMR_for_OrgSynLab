@@ -236,7 +236,79 @@ q
 
 此处gjf_selection.txt的目录应根据本机实际情况修改。
 
+**[第九步]** 由于Chem3D不能直接生成.xyz文件，笔者一般通过其生成的.mol文件利用Multiwfn转换为.xyz文件，进入安装Multiwfn程序的文件夹，创建文本文件xyz_selection.txt，写入内容：
+
+```
+100
+2
+2
+
+0
+q
+```
+
+再创建脚本文件x2xyz.sh，写入内容：
+
+```
+#!/bin/bash
+icc=0
+nfile=$(find ./*.mol|wc -l)
+for inf in *.mol
+do
+((icc++))
+echo converting "${inf}" ... \("${icc}" of "${nfile}"\)
+Multiwfn "${inf}" < ~/software/Multiwfn_2026.4.10_bin_Linux/xyz_selection.txt > /dev/null
+xtb "${inf%mol}xyz" --opt gfnff > /dev/null
+rm charges
+rm wbo
+rm xtbopt.log
+rm xtbrestart
+rm xtbtopo.mol
+rm .xtboptok
+mv xtbopt.xyz "${inf%mol}xyz" -f
+echo "${inf}" has finished
+echo
+done
+rm ./*.mol
+```
+
+其中第8行的xyz_selection.txt的目录应根据本机实际情况修改。该脚本可将当前目录下的所有.mol文件转换为.xyz文件。注意到此处刚转换产生的结构在GFN-FF分子力场下进行了几何优化产生新的.xyz文件，该操作有利于提高CREST程序进行后续分子动力学模拟过程中的稳健性。
+
 ### **6.** **算例演示以及数据处理**
+
+#### 6.1 DP4+
+
+2022年，北海道大学Keiji Tanino课题组通过全合成的方式确认了天然产物6,11-epoxyisodaucane的真实结构应为（**1**），并非分离文献推测的（**2**）（ *Org. Lett.* **2022**, *24*, 7939.）。
+
+<img src="C:\Users\xqd\Documents\Chemistry\PhD_research\nmr_calculation\Dinglab_nmr_calculation\example_1.jpg" style="zoom:50%;" />
+
+
+
+#### 6.2 MM-DP4+
+
+
+
+#### 6.3 dJ-DP4
+
+
+
+#### 6.4 ML-J-DP4
+
+
+
+#### 6.5 ANN-PRA-13
+
+
+
+#### 6.6 ANN-PRA-15
+
+
+
+#### 6.7 autohnmr
+
+
+
+#### 6.8 STS
 
 
 
