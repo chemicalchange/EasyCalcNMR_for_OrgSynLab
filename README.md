@@ -88,7 +88,33 @@ ssmtp（安装：打开终端，运行`sudo yum install ssmtp`；用于发送提
 
 ### **4. 计算流程**
 
-计算
+**[输入文件]** 计算模块目录下的所有.xyz文件，其记录了化合物结构信息。
+
+**[读取用户信息]** 弹出窗口要求用户选择输出文件压缩包的位置，指定输出文件压缩包名称和用于接收提醒邮件的电子邮箱地址。
+
+**[溶剂选择]** 仅限DP4+、MM-DP4+和STS，前两者通过弹出窗口要求用户选择溶剂，后者通过命令行要求用户选择溶剂。
+
+**[并行任务数选择]** 命令行要求用户选择并行任务数。
+
+为提高计算效率，在部分耗时的计算环节中，计算模块将根据用户指定的并行任务数对体系进行均分，例如用户指定并行任务数为3，体系当前有50个代表不同构象的初始结构有待几何优化，其在计算过程中将被分为任务数分别为17/17/16的三组平行进行几何优化。
+
+**[构象生成]** 利用CREST程序根据输入XXX.xyz文件生成一批代表不同构象的初始结构，结果存于XXX_search文件夹。
+
+**[构象筛选]** 利用CENSO程序调用orca、xtb等程序对上述一批初始结构进行筛选，结果存于XXX_screening文件夹。
+
+**[几何优化]** 利用molclus程序调用Gaussian、openbabel等程序对经上述筛选后的一批结构进行几何优化，结果存于XXX_batch/opt文件夹。
+
+**[核磁计算]** 利用Gaussian基于上述几何优化后的一批结构进行核磁计算，结果存于XXX_batch/nmr文件夹。
+
+**[数据提取]** 根据后续数据处理的需要提取构象平均后的磁屏蔽张量、耦合常数矩阵等数据，结果存于XXX_result文件夹。
+
+ML-J-DP4不支持手动处理数据，无数据提取过程。
+
+autohnmr的构象筛选、几何优化、核磁计算过程均由CENSO程序完成，数据提取由ANMR程序完成，结果一并存于XXX_screening文件夹。
+
+**[输出文件打包和邮件提醒]** 计算完成后将所有输出文件打包为指定名称的.zip文件移动至用户指定的位置，并发送电子邮件提醒用户计算完成以及计算耗时。
+
+
 
 ### **5. 计算模块本地化设置**
 
@@ -127,7 +153,7 @@ TMS[chcl3] revtpss[cpcm]/cc-pVTZ//b3lyp-3c[cpcm]
 		},
 ```
 
-**[第四步]** 进入安装CENSO程序的文件夹，进入censo_qm文件夹，打开脚本orca_job.py，找到第249行，替换为如下内容以更正B3LYP-3c方法中色散校正项的定义（注意缩进需严格一致）：
+**[第四步]** 进入安装CENSO程序的文件夹，进入censo_qm文件夹，打开脚本orca_job.py，找到第249行，替换为如下内容以更正B3LYP-3c方法中的色散校正项（注意缩进需严格一致）：
 
 ```
 				orcainput["disp"] = ["! d3bj ABC"]
@@ -144,7 +170,7 @@ nprocs=12
   if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ]
 ```
 
-此处，mem_G为Gaussian计算任务分配总内存数，单位为GB（autohnmr模块不涉及Gaussian计算，故无该选项）；mem_O为orca计算任务<u>单核</u>分配内存数，单位为MB；nprocs为Gaussian或orca计算任务分配CPU核数；maxthreads为平行运行的Gaussian或orca计算任务数。笔者所用的服务器CPU核数为36，每个Gaussian或orca计算任务占12核，用户可指定同时运行1/2/3组任务，对应占用的核数即为12/24/36。若在一台72核服务器上，每个任务占18核，用户可指定同时运行1/2/3/4组任务，则代码应修改为：
+此处，mem_G为Gaussian计算任务分配总内存数，单位为GB（autohnmr不涉及Gaussian计算，故无该选项）；mem_O为orca计算任务<u>单核</u>分配内存数，单位为MB；nprocs为Gaussian或orca计算任务分配CPU核数；maxthreads为并行的Gaussian或orca计算任务数。笔者所用的服务器CPU核数为36，每个Gaussian或orca计算任务占12核，用户可指定同时运行1/2/3组任务，对应占用的核数即为12/24/36。若在一台72核服务器上，每个任务占18核，用户可指定同时运行1/2/3/4组任务，则相应代码应修改为：
 
 ```
 nprocs=18
@@ -153,13 +179,32 @@ nprocs=18
   if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ] && [ "$maxthreads" != 4 ]
 ```
 
-**[第六步]** 每个计算模块中的askinfo.py脚本用于读取用户指定的输出压缩文件目录与邮箱地址，其中第5行需进行修改：
+**[第六步]** 每个计算模块中的askinfo.py脚本用于读取用户指定的输出压缩文件的位置和名称以及用于接收提醒邮件的电子邮箱地址，其中第5行需进行修改：
 
 ```
 dirname = fd.askdirectory(initialdir = "/home/dinglab/calculation/temp",title = "Select the Output Directory")
 ```
 
-此处，initialdir定义了脚本运行时弹出的默认目录，应修改为方便用户指定输出压缩文件的目录。
+此处，initialdir定义了脚本运行时弹出的默认目录，应修改为方便用户指定位置的目录。
+
+为实现计算结束后的邮件提醒功能，需配置ssmtp程序指定发信邮箱，打开终端，运行如下指令以利用vim编辑器打开ssmtp.conf文件：
+
+```
+sudo su
+vim /etc/ssmtp/ssmtp.conf
+```
+
+于文件末写入如下内容：
+
+```
+UseTLS=Yes
+root=发信电子邮箱地址
+mailhub=发送邮件服务器:端口号
+AuthUser=发信电子邮箱地址
+AuthPass=授权码
+```
+
+此处，例如对于QQ邮箱，mailhub和AuthPass的获取见https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode。
 
 **[第七步]** 每个计算模块中的censorc\_XXX文件用于配置CENSO程序，其中以下内容需进行修改：
 
