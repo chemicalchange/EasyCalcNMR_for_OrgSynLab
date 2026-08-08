@@ -311,17 +311,17 @@ rm ./*.mol
 
 <div align=center><img src="./pics/DP4plus_5.png" style="zoom:50%;" /></div>
 
-在个人电脑上安装DP4plus-App用于处理数据，安装见https://github.com/Sarotti-Lab/DP4plus-App。笔者发现新版本的DP4plus-App识别文件名疑似存在BUG，此处建议安装0.2.8版本。首先将XXX_batch/nmr文件夹中的.out文件复制到同一目录下，运行DP4plus-App，调整相应的计算级别，点击NMR，选择该目录，结果如下图所示：
+在个人电脑上安装DP4plus-App用于处理数据，安装见[https://github.com/Sarotti-Lab/DP4plus-App](https://github.com/Sarotti-Lab/DP4plus-App)。笔者发现新版本的DP4plus-App识别文件名疑似存在BUG，此处建议安装0.2.8版本。首先将XXX_batch/nmr文件夹中的.out文件复制到同一目录下，运行DP4plus-App，调整相应的计算级别，点击NMR，选择该目录，结果如下图所示：
 
 <div align=center><img src="./pics/DP4plus_6.png" style="zoom:50%;" /></div>
 
 注意到程序判断不同异构体的方式为识别前缀，因此不同的异构体在文件命名时应当在前缀进行区分。
 
-接下来需要创建记录实验数据与关联原子编号的.xlsx文件，其格式规范见https://github.com/Sarotti-Lab/DP4plus-App，结果如下图所示：
+接下来需要创建记录实验数据与关联原子编号的.xlsx文件，其格式规范见[https://github.com/Sarotti-Lab/DP4plus-App](https://github.com/Sarotti-Lab/DP4plus-App)，结果如下图所示：
 
 <div align=center><img src="./pics/DP4plus_7.png" style="zoom:50%;" /></div>
 
-此处exchange列中同一字母标记的为比较时可交换的一对原子，例如CH<sub>2</sub>上不等价的的氢。标记为可交换的原子的化学位移在比较时自动按计算数据大小顺序进行匹配。此例中偕二甲基的碳氢同理。建议同一批候选结构在生成3D结构时基于ChemDraw绘制的同一个结构，避免在此繁琐地逐个对照编号。若多个候选结构编号不一致时，可额外创建label 1、label 2、label 3三列，输入相应的另一套编号，对应次序与程序识别次序一致。原子编号可通过GaussView程序打开最初的.mol文件查看。
+此处exchange列中同一字母标记的为比较时可交换的一对原子，例如CH<sub>2</sub>上不等价的的氢。标记为可交换的原子的化学位移在比较时自动按计算数据大小顺序进行匹配。此例中偕二甲基的碳氢同理。若多个候选结构编号不一致时，可额外创建label 1、label 2、label 3三列，输入相应的另一套编号，对应次序与程序识别次序一致。建议同一批候选结构在生成3D结构时基于ChemDraw绘制的同一个结构，避免在此繁琐地逐个对照编号。原子编号可通过GaussView程序打开最初的.mol文件查看。
 
 点击Correlation，选择创建的.xlsx关联文件，点击Run，目录下生成DP4plus_results.xlsx文件并自动打开，结果如下图所示：
 
@@ -333,7 +333,7 @@ rm ./*.mol
 
 <div align=center><img src="./pics/DP4plus_9.png" style="zoom:50%;" /></div>
 
-此时原始文献推测结构的DP4+概率变为100%，故DP4+可以无误地区分这一对差向异构体。
+此时原始文献推测结构的各项DP4+概率变为100%，故DP4+可以精准地区分这一对差向异构体。
 
 #### 6.2 MM-DP4+
 
