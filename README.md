@@ -409,7 +409,7 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 #### 6.6 ANN-PRA-2015
 
-进入ANN-PRA-2015计算模块文件夹ANN_PRA_15，同样使用pps_dysA.xyz和rev_dysA.xyz作为输入文件，打开终端，运行`./ANN_PRA_15`，计算耗时约为78 min。
+在此基础上，可以利用区分能力更强的ANN-PRA-2015验证这一结果（该方法仅限氯仿溶剂体系）。进入ANN-PRA-2015计算模块文件夹ANN_PRA_15，同样使用pps_dysA.xyz和rev_dysA.xyz作为输入文件，打开终端，运行`./ANN_PRA_15`，计算耗时约为78 min，相较ANN-PRA-2013明显增加。
 
 类似地，数据处理需通过ANN_PRA_15/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.5b01663](https://doi.org/10.1021/acs.joc.5b01663)，具体结果如下图所示：
 
@@ -417,7 +417,7 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 <div align=center><img src="./pics/ANNPRA15_2.png" style="zoom:50%;" /></div>
 
-此处填写数据时编号不需要对应，无升降序排列限制，但是需要处理两组计算数据，可从在XXX_result文件夹中的XXX_result_gas.txt和XXX_result_sol.txt文本文件中获取，且需要按标准格式指明CH连接关系，不考虑活泼氢。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2015亦可以得出相同的结论。该方法仅限氯仿溶剂。
+此处填写数据时编号不需要对应，无升降序排列限制，但是需要处理两组计算数据，可从在XXX_result文件夹中的XXX_result_gas.txt和XXX_result_sol.txt文本文件中获取，且需要按标准格式指明CH连接关系，不考虑活泼氢。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2015亦可以得出相同的结论。
 
 #### 6.7 autohnmr
 
@@ -431,7 +431,11 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 #### 6.8 STS
 
+2026年，法国巴黎萨克雷大学Guillaume Vincent课题组重新解析了天然产物Pestalustaine A的结构，发现分离文献推测的结构（**8**）有误，天然产物应为另一三环结构（**9**）（*Angew. Chem., Int. Ed.* **2026**, e7194437.）。
 
+<div align=center><img src="./pics/example_4.jpg" style="zoom:50%;" /></div>
+
+接下来笔者将演示利用STS区分这一对结构。
 
 ###  **结语**
 
