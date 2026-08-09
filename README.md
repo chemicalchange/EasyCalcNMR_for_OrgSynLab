@@ -472,15 +472,19 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 #### 6.8 STS
 
-2024年，日本名古屋大学Satoshi Yokoshima课题组实现了天然产物Melognine的推测结构的全合成（*J. Am. Chem. Soc.* **2024**, *146*, 9526.）。合成课题组通过二维谱图确证合成得到分离文献推测结构（**8**），但未明确胺氧化物的氮手性中心的立体化学。
+2024年，日本名古屋大学Satoshi Yokoshima课题组实现了天然产物Melognine的推测结构的全合成（*J. Am. Chem. Soc.* **2024**, *146*, 9526.）。合成课题组通过二维谱图确证合成得到了分离文献推测结构（**8**），但未明确胺氧化物的氮手性中心的立体化学。
 
 <div align=center><img src="./pics/example_4.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用STS确认这一氮手性中心的立体化学。进入STS计算模块文件夹STS，生成alpha_melo.xyz和beta_melo.xyz输入文件，分别对应结构（**8a**）和（**8b**），打开终端，运行`./STS`，指定的输出文件压缩包的位置和名称以及用于接收提醒邮件的电子邮箱地址，选择并行任务数，此时命令行要求选择溶剂，选择chloroform后按下回车：
+于此演示利用STS确认这一氮手性中心的立体化学。进入STS计算模块文件夹STS，生成alpha_melo.xyz和beta_melo.xyz输入文件，分别对应结构（**8a**）和（**8b**），打开终端，运行`./STS`，指定的输出文件压缩包的位置和名称以及用于接收提醒邮件的电子邮箱地址，选择并行任务数，此时命令行要求选择溶剂，输入chloroform后按下回车：
 
 <div align=center><img src="./pics/STS_1.png" style="zoom:50%;" /></div>
 
-计算耗时约 min。数据处理需通过STS/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.0c01451](https://doi.org/10.1021/acs.joc.0c01451)，具体结果如下图所示：
+计算耗时约218 min，关闭终端，进入输出文件压缩包所在位置，复制压缩文件至个人电脑后解压，准备处理数据。
+
+数据处理需通过STS/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.0c01451](https://doi.org/10.1021/acs.joc.0c01451)，具体结果如下图所示：
+
+
 
 
 
