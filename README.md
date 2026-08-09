@@ -439,7 +439,7 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 <div align=center><img src="./pics/example_3.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用autohnmr区分这一对非对映异构体。进入autohnmr计算模块文件夹autohnmr，生成beta_diol.xyz和alpha_diol.xyz输入文件，分别对应二醇（**6**）和（**7**），打开终端，运行`./autohnmr`，计算耗时约为206 min。
+于此演示利用autohnmr区分这一对非对映异构体。进入autohnmr计算模块文件夹autohnmr，生成beta_diol.xyz和alpha_diol.xyz输入文件，分别对应二醇（**6**）和（**7**），打开终端，运行`./autohnmr`，计算耗时约为206 min，关闭终端，进入输出文件压缩包所在位置，复制压缩文件至个人电脑后解压，准备处理数据。
 
 进入beta_diol_screening文件夹，打开anmr_beta_diol.out文件，找到如下位置：
 
@@ -464,11 +464,11 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 <div align=center><img src="./pics/autohnmr_2.png" style="zoom:50%;" /></div>
 
-利用类似的方式通过anmr_alpha_diol.out可得：二醇（**7**）的二级醇偕氧氢化学位移的预测值为4.593 ppm，与烯丙位CH<sub>2</sub>中的伪平伏键的氢之间存在长程耦合，耦合常数预测值为1.1 Hz，该二级醇偕氧氢峰形可能呈现为d峰或宽s峰。这两组预测值与实验值的对应关系如下图所示：
+利用类似的方式分析anmr_alpha_diol.out可得：二醇（**7**）的二级醇偕氧氢化学位移的预测值为4.593 ppm，与烯丙位CH<sub>2</sub>中的伪平伏键的氢之间存在长程耦合，耦合常数预测值为1.1 Hz，该二级醇偕氧氢峰形可能呈现为d峰或宽s峰。这一对预测值与实验值的对应关系总结如下图所示：
 
 <div align=center><img src="./pics/example_3_result.jpg" style="zoom:50%;" /></div>
 
-此处计算预测的二醇（**6**）和（**7**）中特征氢化学位移的相对大小和耦合裂分情况与实验高度吻合，即无需单晶培养，通过氢谱结合autohnmr计算的方式即可快速准确判断还原产物的立体化学。
+此处计算预测的二醇（**6**）和（**7**）特征氢的耦合裂分情况以及二者间特征氢的化学位移的相对大小与实验结果高度相符，通过氢谱结合autohnmr计算的方式无需单晶培养即可快速准确判断还原产物的立体化学。
 
 #### 6.8 STS
 
