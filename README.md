@@ -484,9 +484,9 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 数据处理需通过STS/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.0c01451](https://doi.org/10.1021/acs.joc.0c01451)，具体结果如下图所示：
 
+<div align=center><img src="./pics/STS_2.png" style="zoom:50%;" /></div>
 
-
-
+此处，Isomer 1对应结构（**8a**），Isomer 2对应结构（**8b**）。P<sub>rel</sub>与DP4概率类似，可见STS可以判断合成结构中胺氧化物的氮手性中心的立体化学应与（**8a**）一致，这与文献报道的NOE相关相符。注意到对于正确匹配的结构，STS计算所得的碳化学位移预测值与实验值的平均偏差仅1 ppm左右，具有相当高的精确度，可作为检验结构正误的金标准。
 
 ###  **结语**
 
