@@ -1,4 +1,3 @@
-#By Qidong Xia 2026.5.2
 import math
 f = open("E_summary.txt","r")
 Alines = f.readlines()
