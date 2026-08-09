@@ -92,21 +92,21 @@ ssmtp（安装：打开终端，运行`sudo yum install ssmtp`；用于发送提
 
 **[输入文件]** 计算模块目录下的所有.xyz文件，其记录了化合物结构信息。
 
-**[读取用户信息]** 弹出窗口要求用户选择输出文件压缩包的位置，指定输出文件压缩包名称和用于接收提醒邮件的电子邮箱地址。
+**[读取用户信息]** 弹出窗口要求用户选择输出文件压缩包的位置，指定输出文件压缩包的名称和用于接收提醒邮件的电子邮箱地址。
 
 **[溶剂选择]** 仅限DP4+、MM-DP4+和STS，前两者通过弹出窗口要求用户选择溶剂，后者通过命令行要求用户选择溶剂。
 
 **[并行任务数选择]** 命令行要求用户选择并行任务数。
 
-为提高计算效率，在部分耗时的计算环节中，计算模块将根据用户指定的并行任务数对体系进行均分，例如用户指定并行任务数为3，体系当前有50个代表不同构象的初始结构有待几何优化，其在计算过程中将被分为任务数分别为17/17/16的三组平行进行几何优化。
+为提高计算效率，在部分耗时的计算环节中，计算模块将根据用户指定的并行任务数将体系进行均分，例如用户指定并行任务数为3，体系当前有50个代表不同构象的初始结构有待几何优化，其在计算过程中将被分为任务数分别为17/17/16的3组平行批次进行几何优化。
 
 **[构象生成]** 利用CREST程序根据输入XXX.xyz文件生成一批代表不同构象的初始结构，结果存于XXX_search文件夹。
 
-**[构象筛选]** 利用CENSO程序调用orca、xtb等程序对上述一批初始结构进行筛选，结果存于XXX_screening文件夹。
+**[构象筛选]** 利用CENSO程序调用orca、xtb等程序对上述生成的初始结构进行筛选，结果存于XXX_screening文件夹。
 
-**[几何优化]** 利用molclus程序调用Gaussian、openbabel等程序对经上述筛选后的一批结构进行几何优化，结果存于XXX_batch/opt文件夹。
+**[几何优化]** 利用molclus程序调用Gaussian、openbabel等程序对经上述筛选后的结构进行几何优化，结果存于XXX_batch/opt文件夹。
 
-**[核磁计算]** 利用Gaussian基于上述几何优化后的一批结构进行核磁计算，结果存于XXX_batch/nmr文件夹。
+**[核磁计算]** 利用Gaussian基于上述几何优化后的结构进行核磁计算，结果存于XXX_batch/nmr文件夹。
 
 **[数据提取]** 根据后续数据处理的需要提取构象平均后的磁屏蔽常数、耦合常数矩阵等数据，结果存于XXX_result文件夹。
 
@@ -153,13 +153,13 @@ TMS[chcl3] revtpss[cpcm]/cc-pVTZ//b3lyp-3c[cpcm]
 		},
 ```
 
-**[第四步]** 进入安装CENSO程序的文件夹，进入censo_qm文件夹，打开脚本orca_job.py，找到第249行，替换为如下内容以更正B3LYP-3c方法中的色散校正项（注意缩进需严格一致）：
+打开脚本orca_job.py，找到第249行，替换为如下内容以更正B3LYP-3c方法中的色散校正项（注意缩进需严格一致）：
 
 ```
 				orcainput["disp"] = ["! d3bj ABC"]
 ```
 
-**[第五步]** 每个文件夹对应相应的计算模块，进入文件夹后在当前目录打开终端`chmod +x *`以为所有脚本添加可执行权限，与文件夹同名的脚本用于执行整个计算流程，其中以下内容需根据本地计算资源修改：
+**[第四步]** 每个文件夹对应相应的计算模块，进入文件夹后在当前目录打开终端，运行`chmod +x *`以为所有脚本添加可执行权限，与文件夹同名的脚本用于执行整个计算流程，其中以下内容需根据本地计算资源修改：
 
 ```
 mem_G=24
@@ -170,7 +170,7 @@ nprocs=12
   if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ]
 ```
 
-此处，mem_G为Gaussian计算任务分配总内存数，单位为GB（autohnmr不涉及Gaussian计算，故无该选项）；mem_O为orca计算任务单核分配内存数，单位为MB；nprocs为Gaussian或orca计算任务分配CPU核数；maxthreads为并行的Gaussian或orca计算任务数。笔者所用的服务器CPU核数为36，每个Gaussian或orca计算任务占12核，用户可指定同时运行1/2/3组任务，对应占用的核数即为12/24/36。若在一台72核服务器上，每个任务占18核，用户可指定同时运行1/2/3/4组任务，则相应代码应修改为：
+此处，mem_G为Gaussian计算任务分配总内存数，单位为GB（autohnmr不涉及Gaussian计算，故无该选项）；mem_O为orca计算任务单核分配内存数，单位为MB；nprocs为Gaussian或orca计算任务分配CPU核数；maxthreads为并行的Gaussian或orca计算任务数。笔者所用的服务器CPU核数为36，每个Gaussian或orca计算任务占12核，用户可指定平行运行1/2/3组任务，对应占用的核数即为12/24/36。若在一台72核服务器上，每个任务占18核，用户可指定平行运行1/2/3/4组任务，则相应代码应修改为：
 
 ```
 nprocs=18
@@ -179,7 +179,7 @@ nprocs=18
   if [ "$maxthreads" != 1 ] && [ "$maxthreads" != 2 ] && [ "$maxthreads" != 3 ] && [ "$maxthreads" != 4 ]
 ```
 
-**[第六步]** 每个计算模块中的askinfo.py脚本用于读取用户指定的输出压缩文件的位置和名称以及用于接收提醒邮件的电子邮箱地址，其中第5行需进行修改：
+**[第五步]** 每个计算模块中的askinfo.py脚本用于读取用户指定的输出文件压缩包的位置和名称以及用于接收提醒邮件的电子邮箱地址，其中第5行需进行修改：
 
 ```
 dirname = fd.askdirectory(initialdir = "/home/dinglab/calculation/temp",title = "Select the Output Directory")
@@ -206,7 +206,7 @@ AuthPass=授权码
 
 此处，例如对于QQ邮箱，mailhub和AuthPass的获取见https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode。
 
-**[第七步]** 每个计算模块中的censorc\_XXX文件用于配置CENSO程序，其中以下内容需进行修改：
+**[第六步]** 每个计算模块中的censorc\_XXX文件用于配置CENSO程序，其中以下内容需进行修改：
 
 ```
 ORCA: /home/dinglab/software/orca_6.1.1
@@ -217,7 +217,7 @@ CREST: /home/dinglab/software/crest_3.0.2/crest
 
 此处分别指定了ORCA、xtb、CREST程序的目录，应根据本机实际情况修改。
 
-**[第八步]** DP4plus、ANN_PRA_15、STS三个计算模块中的NMR计算输入文件由Multiwfn批量创建，首先进入安装Multiwfn程序的文件夹，创建文本文件gjf_selection.txt，写入内容：
+**[第七步]** DP4plus、ANN_PRA_15、STS三个计算模块中的NMR计算输入文件由Multiwfn批量创建，首先进入安装Multiwfn程序的文件夹，创建文本文件gjf_selection.txt，写入内容：
 
 ```
 100
@@ -236,7 +236,7 @@ q
 
 此处gjf_selection.txt的目录应根据本机实际情况修改。
 
-**[第九步]** 由于Chem3D不能直接生成.xyz文件，笔者一般通过其生成的.mol文件利用Multiwfn转换为.xyz文件，进入安装Multiwfn程序的文件夹，创建文本文件xyz_selection.txt，写入内容：
+**[第八步]** 由于Chem3D不能直接生成.xyz文件，笔者一般通过其生成的.mol文件利用Multiwfn转换为.xyz文件，进入安装Multiwfn程序的文件夹，创建文本文件xyz_selection.txt，写入内容：
 
 ```
 100
@@ -282,11 +282,11 @@ rm ./*.mol
 
 <div align=center><img src="./pics/example_1.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用DP4+区分这一对非对映异构体。首先在个人电脑上利用ChemDraw结合Chem3D生成rev_eid.mol和pps_eid.mol文件，分别对应修正结构（**1**）和原始推测结构（**2**）。再将这两个.mol文件传输至服务器上DP4+计算模块文件夹中，打开终端，运行`x2xyz.sh`，即可转换为rev_eid.xyz和pps_eid.xyz。最终运行`./DP4plus`，弹出窗口如下图所示，选择输出压缩文件的位置后点击OK：
+接下来笔者将演示利用DP4+区分这一对非对映异构体。首先在个人电脑上利用ChemDraw结合Chem3D的方式生成rev_eid.mol和pps_eid.mol文件，分别对应修正结构（**1**）和原始推测结构（**2**）。再将这两个.mol文件传输至服务器上DP4+计算模块文件夹DP4plus中，打开终端，运行`x2xyz.sh`，即可生成rev_eid.xyz和pps_eid.xyz。最终运行`./DP4plus`，弹出窗口如下图所示，选择输出文件压缩包的位置后点击OK：
 
 <div align=center><img src="./pics/DP4plus_1.png" style="zoom:50%;" /></div>
 
-弹出窗口如下图所示，输入输出压缩文件的名称以及用于接收提醒邮件的电子邮箱地址后点击Start Calculation：
+弹出窗口如下图所示，输入输出文件压缩包的名称以及用于接收提醒邮件的电子邮箱地址后点击Start Calculation：
 
 <div align=center><img src="./pics/DP4plus_2.png" style="zoom:50%;" /></div>
 
@@ -321,37 +321,37 @@ rm ./*.mol
 
 <div align=center><img src="./pics/DP4plus_7.png" style="zoom:50%;" /></div>
 
-此处exchange列中同一字母标记的为比较时可交换的一对原子，例如CH<sub>2</sub>上不等价的的氢。标记为可交换的原子的化学位移在比较时自动按计算数据大小顺序进行匹配。此例中偕二甲基的碳氢同理。若多个候选结构编号不一致时，可额外创建label 1、label 2、label 3三列，输入相应的另一套编号，对应次序与程序识别次序一致。建议同一批候选结构在生成3D结构时基于ChemDraw绘制的同一个结构，避免在此繁琐地逐个对照编号。原子编号可通过GaussView程序打开最初的.mol文件查看。
+此处exchange列中同一字母标记的为比较时可交换的一对原子，例如CH<sub>2</sub>上不等价的的氢、偕二甲基的碳氢等。标记为可交换的原子的化学位移在比较时自动按计算数据大小顺序进行匹配。若多个候选结构编号不一致时，可额外创建label 1、label 2、label 3三列，输入相应的另一套编号，对应次序与程序识别次序一致。建议同一批候选结构在生成3D结构时基于ChemDraw绘制的同一个结构，避免在此繁琐地逐个对照编号。原子编号可通过GaussView程序打开最初的.mol文件或输出文件中的.gjf文件进行查看。
 
-点击Correlation，选择创建的.xlsx关联文件，点击Run，目录下生成DP4plus_results.xlsx文件并自动打开，结果如下图所示：
+点击Correlation，选择新创建的.xlsx关联文件，点击Run，目录下生成DP4plus_results.xlsx文件并自动打开，结果如下图所示：
 
 <div align=center><img src="./pics/DP4plus_8.png" style="zoom:50%;" /></div>
 
-此处只需关注蓝色框中数据，可见修正后的结构对应的基于氢化学位移、碳化学位移以及综合两者下的DP4+概率均为100%，即DP4+可以判断出天然产物的结构应当为（**1**）。
+此处只需关注蓝色框中数据，可见结构（**1**）对应的基于氢化学位移、碳化学位移以及综合两者下的DP4+概率均为100%，即DP4+可以判断出天然产物的真实结构应当为（**1**）。
 
-注意到合成课题组亦提供了合成的推测结构（**2**）的谱图数据，重新创建相应的.xlsx关联文件，重复上述操作，结果如下图所示：
+注意到合成课题组亦提供了合成的分离文献推测结构（**2**）的谱图数据，重新创建相应的.xlsx关联文件，重复上述操作，结果如下图所示：
 
 <div align=center><img src="./pics/DP4plus_9.png" style="zoom:50%;" /></div>
 
-此时原始文献推测结构的各项DP4+概率变为100%，故DP4+可以精准地区分这一对非对映异构体。
+此时结构（**2**）的各项DP4+概率变为100%，故DP4+可以精准地区分这一对非对映异构体。
 
-数据处理亦可通过使用DP4+计算模块文件夹中的tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.joc.1c00987](https://doi.org/10.1021/acs.joc.1c00987)，所需的构象平均后的磁屏蔽常数数据可从在XXX_result文件夹中的XXX_result.txt文本文件中获取。
+数据处理亦可通过使用DP4plus/tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.joc.1c00987](https://doi.org/10.1021/acs.joc.1c00987)，所需的构象平均后的磁屏蔽常数数据可从在XXX_result文件夹中的XXX_result.txt文本文件中获取。
 
 #### 6.2 MM-DP4+
 
-MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹，同样使用上述算例，打开终端，运行`./MM_DP4plus`，计算耗时约为15 min。由于该体系的构象数目较少，MM-DP4+在计算效率上相较DP4+未展示出显著优势。
+MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM_DP4plus，同样使用上述rev_eid.xyz和pps_eid.xyz作为输入文件，打开终端，运行`./MM_DP4plus`，计算耗时约为15 min。由于该体系的构象数目较少，MM-DP4+在计算效率上相较DP4+未展示出显著优势。
 
 同样使用DP4plus-App处理数据，于MM-DP4+选项下调整相应的计算级别，重复类似操作，结果如下图所示：
 
 <div align=center><img src="./pics/MMDP4plus_1.png" style="zoom:50%;" /></div>
 
-MM-DP4+亦可以判断出天然产物的结构应当为（**1**）。此处程序警告计算级别不匹配为识别错误，可忽略。此外，处理数据前需进入DP4plus-App所在目录，找到data_base_MM.xlsx文件，将子表表名”Bezene“更正为”Benzene“可避免程序报错。
+可见MM-DP4+亦可以判断出天然产物的真实结构应当为（**1**）。此处程序警告计算级别不匹配为识别错误，可忽略。此外，处理数据前需进入DP4plus-App程序所在目录，打开data_base_MM.xlsx文件，将子表表名”Bezene“更正为”Benzene“，避免程序报错。
 
-类似地，数据处理亦可通过使用MM-DP4+计算模块文件夹中的tool文件夹中的Excel计算器手动完成。
+类似地，数据处理亦可通过使用MM_DP4plus/tool文件夹中的Excel计算器手动完成。
 
 #### 6.3 dJ-DP4
 
-合成化学家在修正天然产物6,11-epoxyisodaucane的结构时，修正位点处的氢的耦合常数起到了重要的指示作用。同样使用该算例演示利用dJ-DP4区分这一对非对映异构体。类似地，进入dJ-DP4计算模块文件夹，打开终端，运行`./dJ_DP4`，无选择溶剂环节，计算耗时约为19 min。
+合成化学家在修正天然产物6,11-epoxyisodaucane的结构时，修正手性中心处的氢的耦合常数起到了重要的指示作用，笔者继续使用该算例演示利用dJ-DP4对这一对非对映异构体的区分。类似地，进入dJ-DP4计算模块文件夹dJ_DP4，同样使用rev_eid.xyz和pps_eid.xyz作为输入文件，打开终端，运行`./dJ_DP4`，此时无选择溶剂环节，计算耗时约为19 min。
 
 构象平均后的磁屏蔽常数数据可从在XXX_result文件夹中的XXX_result.txt文本文件中获取：
 
@@ -365,25 +365,55 @@ MM-DP4+亦可以判断出天然产物的结构应当为（**1**）。此处程�
 
 此处矩阵元表示两个相应编号的氢原子间的耦合常数，此例中关注的一对耦合常数已用黄色高亮。
 
-数据处理需通过dJ-DP4计算模块文件夹中的tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.orglett.9b01193](https://doi.org/10.1021/acs.orglett.9b01193)，结果如下图所示：
+数据处理需通过dJ_DP4/tool文件夹中的Excel计算器手动完成，其使用说明见[https://doi.org/10.1021/acs.orglett.9b01193](https://doi.org/10.1021/acs.orglett.9b01193)，结果如下图所示：
 
 <div align=center><img src="./pics/dJDP4_3.png" style="zoom:50%;" /></div>
 
-此处，第一列对应原始文献推测结构（**2**），第二列对应修正结构（**1**），可见dJ-DP4可以判断出天然产物的结构应当为（**1**）。注意到即使不考虑碳氢的化学位移，仅比较特征的耦合常数，修正结构（**1**）明显与实验数据更吻合。
+此处，第1列对应分离文献推测结构（**2**），第2列对应修正结构（**1**），可见dJ-DP4可以判断出天然产物的真实结构应当为（**1**）。注意到即使不考虑碳氢的化学位移，仅比较特征的耦合常数，修正结构（**1**）明显与实验数据更吻合。
 
 #### 6.4 ML-J-DP4
 
-进入ML-J-DP4计算模块文件夹，同样使用上述算例，打开终端，运行`./ML_J_DP4`，计算耗时约为4 min，相较dJ-DP4计算效率显著提高。在个人电脑上安装ml-jdp4程序以用于处理数据，安装见[https://github.com/Sarotti-Lab/ML_J_DP4](https://github.com/Sarotti-Lab/ML_J_DP4)。尽管标准安装流程要求Python版本高于3.8即可，但事实上安装时会提示其默认的名为”sklearn“的依赖包名称已废止，新的名为“scikit-learn”的依赖包需要Python版本高于3.9，因此为顺利安装该数据处理程序，Python版本实际应当高于3.9。将ML-J-DP4计算文件文件夹中的tool文件夹中的ml-jdp4-1.3.2.tar.gz压缩文件复制到个人电脑上，解压并修改其中setup.py脚本中”sklearn“为“scikit-learn”，随后在setup.py所在目录下打开cmd运行`python setup.py install`以完成安装。
+进入ML-J-DP4计算模块文件夹ML_J_DP4，同样使用rev_eid.xyz和pps_eid.xyz作为输入文件，打开终端，运行`./ML_J_DP4`，计算耗时约为4 min，相较dJ-DP4计算效率显著提高。
+
+在个人电脑上安装ml-jdp4程序以用于处理数据，安装见[https://github.com/Sarotti-Lab/ML_J_DP4](https://github.com/Sarotti-Lab/ML_J_DP4)。尽管标准安装流程要求Python版本高于3.8即可，但事实上安装时会提示其默认的名为”sklearn“的依赖包名称已废止，新的名为“scikit-learn”的依赖包需要Python版本高于3.9，因此为顺利安装该数据处理程序，Python版本实际应当高于3.9。将ML_J_DP4/tool文件夹中的ml-jdp4-1.3.2.tar.gz压缩包复制到个人电脑上，解压并修改其中setup.py脚本中”sklearn“为“scikit-learn”，随后在setup.py所在目录下打开cmd，运行`python setup.py install`以完成安装。
+
+首先将XXX_batch/nmr文件夹中的.out文件复制到同一目录下，创建记录实验数据与关联原子编号的.xlsx文件，其格式规范见[https://github.com/Sarotti-Lab/ML_J_DP4](https://github.com/Sarotti-Lab/ML_J_DP4)，结果如下图所示：
+
+<div align=center><img src="./pics/MLJDP4_1.png" style="zoom:50%;" /></div>
+
+<div align=center><img src="./pics/MLJDP4_2.png" style="zoom:50%;" /></div>
+
+此处exchange列标“1”表明该项与其下一项可交换，这两项的exp_data需按降序排列；耦合常数仅限C(sp<sup>3</sup>)–H之间的<sup>3</sup>*J*耦合常数。
+
+打开cmd，运行`ml_jdp4`，弹出窗口分别选择上述目录和新创建的.xlsx关联文件，程序处理完毕后目录下生成Results_ML_J_DP4.xlsx文件，打开后结果如下图所示：
+
+<div align=center><img src="./pics/MLJDP4_3.png" style="zoom:50%;" /></div>
+
+此处，Isomer 1对应分离文献推测结构（**2**），Isomer 2对应修正结构（**1**），对应次序与.out文件的前缀一致，可见ML-J-DP4亦可以判断出天然产物的真实结构应当为（**1**）。
+
+#### 6.5 ANN-PRA-2013
+
+2021年，南开大学鲁照永课题组完成了天然产物Dysiberbol A的全合成并意外修正了其结构（*Angew. Chem., Int. Ed.* **2021**, *60*, 13807.）。分离文献推测结构为（**3**），而修正结构应为脱水醚化后的结构（**4**）。
+
+<div align=center><img src="./pics/example_2.jpg" style="zoom:50%;" /></div>
+
+接下来笔者将演示利用ANN-PRA-2013区分这一对结构。进入ANN-PRA-2013计算模块文件夹ANN_PRA_13，通过类似的方式生成pps_dysA.xyz和rev_dysA.xyz输入文件，打开终端，运行`./ANN_PRA_13`，计算耗时约为19 min。
+
+数据处理需通过ANN_PRA_13/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1039/c3ob40843d](https://doi.org/10.1039/c3ob40843d)，具体结果如下图所示：
 
 
 
-#### 6.5 ANN-PRA-13
+若候选结构骨架有误，则指认过程毫无意义，此处填写数据时编号不需要对应，化学位移实验值按降序排列，计算的磁屏蔽常数值按升序排列。结果“10”指示结构正确，“01”则指示结构错误，中间值无概率意义，不可比较和解读。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2013可明确判断分离文献推测的原始结构有误，天然产物的真实结构应为（**4**）。
+
+#### 6.6 ANN-PRA-2015
+
+进入ANN-PRA-2015计算模块文件夹ANN_PRA_15，同样使用pps_dysA.xyz和rev_dysA.xyz作为输入文件，打开终端，运行`./ANN_PRA_15`，计算耗时约为 min。
+
+类似地，数据处理需通过ANN_PRA_15/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.5b01663](https://doi.org/10.1021/acs.joc.5b01663)，具体结果如下图所示：
 
 
 
-#### 6.6 ANN-PRA-15
-
-
+此处填写数据时编号不需要对应，无升降序排列限制，但是需填入两组计算数据，可从在XXX_result文件夹中的XXX_result_gas.txt和XXX_result_sol.txt文本文件中获取。且需按标准格式指明CH连接关系，不考虑活泼氢。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2015亦可以得出相同的结论。该方法仅限氯仿溶剂。
 
 #### 6.7 autohnmr
 
