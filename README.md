@@ -425,23 +425,21 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 <div align=center><img src="./pics/example_3.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用autohnmr区分这一对非对映异构体。进入autohnmr计算模块文件夹autohnmr，生成beta_diol.xyz和alpha_diol.xyz输入文件，分别对应二醇（**6**）和（**7**），打开终端，运行`./autohnmr`，计算耗时约为 min。
+接下来笔者将演示利用autohnmr区分这一对非对映异构体。进入autohnmr计算模块文件夹autohnmr，生成beta_diol.xyz和alpha_diol.xyz输入文件，分别对应二醇（**6**）和（**7**），打开终端，运行`./autohnmr`，计算耗时约为206 min。
 
 
 
 #### 6.8 STS
 
-2026年，法国巴黎萨克雷大学Guillaume Vincent课题组重新解析了天然产物Pestalustaine A的结构，发现分离文献推测的结构（**8**）有误，天然产物应为另一三环结构（**9**）（*Angew. Chem., Int. Ed.* **2026**, e7194437.）。
+2024年，日本名古屋大学Satoshi Yokoshima课题组实现了天然产物Melognine的推测结构的全合成（*J. Am. Chem. Soc.* **2024**, *146*, 9526.）。合成课题组通过二维谱图确证合成得到分离文献推测结构（**8**），但未明确胺氧化物的氮手性中心的立体化学。
 
 <div align=center><img src="./pics/example_4.jpg" style="zoom:50%;" /></div>
 
-接下来笔者将演示利用STS区分这一对结构。进入STS计算模块文件夹STS，生成pps_PA.xyz和rev_PA.xyz输入文件，分别对应原始推测结构（**8**）和修正结构（**9**），打开终端，运行`./STS`，选择并行任务数后命令行要求选择溶剂，选择methanol后按下回车：
+接下来笔者将演示利用STS确认这一氮手性中心的立体化学。进入STS计算模块文件夹STS，生成alpha_melo.xyz和beta_melo.xyz输入文件，分别对应结构（**8a**）和（**8b**），打开终端，运行`./STS`，指定的输出文件压缩包的位置和名称以及用于接收提醒邮件的电子邮箱地址，选择并行任务数，此时命令行要求选择溶剂，选择chloroform后按下回车：
 
-
+<div align=center><img src="./pics/STS_1.png" style="zoom:50%;" /></div>
 
 计算耗时约 min。数据处理需通过STS/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.0c01451](https://doi.org/10.1021/acs.joc.0c01451)，具体结果如下图所示：
-
-
 
 
 
