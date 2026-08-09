@@ -82,7 +82,7 @@ molclus 1.14（安装见[http://www.keinsci.com/research/molclus.html](http://ww
 
 Multiwfn 3.8 (2026.4.10)（安装见[http://sobereva.com/multiwfn/](http://sobereva.com/multiwfn/)）
 
-Python 3.9.25（安装依赖包tkinter：打开终端，运行`sudo yum install python3-tkinter`）
+Python 3.9.25（安装依赖包tkinter、numpy、matplotlib）
 
 ssmtp（安装：打开终端，运行`sudo yum install ssmtp`；用于发送提醒邮件，配置见后文）
 
@@ -409,15 +409,23 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 #### 6.6 ANN-PRA-2015
 
-进入ANN-PRA-2015计算模块文件夹ANN_PRA_15，同样使用pps_dysA.xyz和rev_dysA.xyz作为输入文件，打开终端，运行`./ANN_PRA_15`，计算耗时约为 min。
+进入ANN-PRA-2015计算模块文件夹ANN_PRA_15，同样使用pps_dysA.xyz和rev_dysA.xyz作为输入文件，打开终端，运行`./ANN_PRA_15`，计算耗时约为78 min。
 
 类似地，数据处理需通过ANN_PRA_15/tool文件夹中的Excel计算器完成，其使用说明见[https://doi.org/10.1021/acs.joc.5b01663](https://doi.org/10.1021/acs.joc.5b01663)，具体结果如下图所示：
 
+<div align=center><img src="./pics/ANNPRA15_1.png" style="zoom:50%;" /></div>
 
+<div align=center><img src="./pics/ANNPRA15_2.png" style="zoom:50%;" /></div>
 
-此处填写数据时编号不需要对应，无升降序排列限制，但是需填入两组计算数据，可从在XXX_result文件夹中的XXX_result_gas.txt和XXX_result_sol.txt文本文件中获取。且需按标准格式指明CH连接关系，不考虑活泼氢。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2015亦可以得出相同的结论。该方法仅限氯仿溶剂。
+此处填写数据时编号不需要对应，无升降序排列限制，但是需要处理两组计算数据，可从在XXX_result文件夹中的XXX_result_gas.txt和XXX_result_sol.txt文本文件中获取，且需要按标准格式指明CH连接关系，不考虑活泼氢。上图对应分离文献推测结构（**3**）与实验数据比较的结果，下图对应修正结构（**4**）的相应结果，可见ANN-PRA-2015亦可以得出相同的结论。该方法仅限氯仿溶剂。
 
 #### 6.7 autohnmr
+
+2022年，北京大学贾彦兴课题组在天然产物Principinol C的全合成过程中，酮酯（**5**）在DIBAL-H的还原下可生成二醇（**6**）和（**7**），其立体化学均由X-射线单晶衍射确认（*J. Am. Chem. Soc.* **2022**, *144*, 20196.）。
+
+<div align=center><img src="./pics/example_3.jpg" style="zoom:50%;" /></div>
+
+接下来笔者将演示利用autohnmr区分这一对非对映异构体。进入autohnmr计算模块文件夹autohnmr，生成beta_diol.xyz和alpha_diol.xyz输入文件，分别对应二醇（**6**）和（**7**），打开终端，运行`./autohnmr`，计算耗时约为 min。
 
 
 
