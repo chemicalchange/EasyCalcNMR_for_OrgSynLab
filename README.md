@@ -476,7 +476,7 @@ MM-DP4+的相应操作与DP4+完全类似，进入MM-DP4+计算模块文件夹MM
 
 <div align=center><img src="./pics/STS_2.png" style="zoom:50%;" /></div>
 
-此处，Isomer 1对应结构（**8a**），Isomer 2对应结构（**8b**）。P<sub>rel</sub>与DP4概率类似，MAE为平均绝对误差，RMS为均方根误差，可见STS判断合成结构中胺氧化物的氮手性中心的立体化学应与（**8a**）一致，这与文献报道的NOE相关亦相符（见下图）。注意到对于正确匹配的结构，STS计算所得的碳化学位移预测值与实验值的平均误差仅1 ppm左右，具有相当高的精确度，可作为检验结构正误的金标准。
+此处，Isomer 1对应结构（**8a**），Isomer 2对应结构（**8b**），P<sub>rel</sub>与DP4概率类似，MAE为平均绝对误差，RMS为均方根误差。可见STS判断合成结构中胺氧化物的氮手性中心的立体化学应与（**8a**）一致，这与文献报道的NOE相关亦相符（见下图）。注意到对于正确匹配的结构，STS计算所得的碳化学位移预测值与实验值的平均误差仅1 ppm左右，具有相当高的精确度，可作为检验结构正误的金标准。
 
 <div align=center><img src="./pics/example_4_NOE.jpg" style="zoom:50%;" /></div>
 
