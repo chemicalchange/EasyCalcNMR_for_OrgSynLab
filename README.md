@@ -72,7 +72,7 @@ Python 3.9.25（安装依赖包tkinter、numpy、matplotlib）
 
 ssmtp（安装：打开终端，运行`sudo yum install ssmtp`）
 
-其中CREST、CENSO、ANMR、molclus和Multiwfn需加入环境变量。
+其中CREST、ANMR、molclus和Multiwfn需加入环境变量。
 
 ### **4. 计算流程**
 
