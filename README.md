@@ -115,7 +115,7 @@ autohnmr的构象筛选、几何优化、核磁计算环节均由CENSO程序完�
 %MaxCore 2500
 ```
 
-进入安装CENSO程序的文件夹，进入censo_qm文件夹，打开脚本cfg.py，程序识别的理论方法记录于该文件中，找到第192行，行末换行写入如下内容以添加泛函mPW1PW91和ωB97M-V（注意缩进需严格一致）：
+进入安装CENSO程序的文件夹，进入censo_qm文件夹，打开脚本cfg.py，程序识别的理论方法记录于该文件中，找到第192行，行末换行写入如下内容以添加泛函mPW1PW91和ωB97M-V以及组合方法HF-3c（注意缩进需严格一致）：
 
 ```
 		"mPW1PW91": {
@@ -132,6 +132,21 @@ autohnmr的构象筛选、几何优化、核磁计算环节均由CENSO程序完�
 			"part": ["func0", "func", "func3", "func_j", "func_s"],
 			"type": "rsh_hybrid",
 		},
+		"hf-3c": {
+            "tm": None,
+            "orca": "hf-3c",
+            "disp": "composite",
+            "part": [
+                "func0",
+                "func",
+                "func3",
+                "func_j",
+                "func_s",
+                "func_or",
+                "func_or_scf",
+            ],
+            "type": "composite_hybrid",
+        },
 ```
 
 打开脚本orca_job.py，找到第249行，替换为如下内容以更正B3LYP-3c方法中的色散校正项（注意缩进需严格一致）：
